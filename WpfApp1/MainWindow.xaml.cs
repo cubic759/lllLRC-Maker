@@ -80,7 +80,6 @@ namespace WpfApp1
         }
 
         int itemAfter = 0;
-
         private void InsertTag_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (this.IsActive)
@@ -110,8 +109,8 @@ namespace WpfApp1
                 LyricScroll.ScrollToVerticalOffset(LyricScroll.VerticalOffset);
             }
         }
-
         #endregion 命令
+
         #region 主要方法
         public void initialization(string fileName)
         {
@@ -169,6 +168,7 @@ namespace WpfApp1
                 }
             }
         }
+
         private void UpdateProgress()
         {
             if (!sliderLock)
@@ -224,8 +224,8 @@ namespace WpfApp1
             });
         }
         #endregion
-        #region 标题栏事件
 
+        #region 标题栏事件
         /// <summary>
         /// 窗口移动事件
         /// </summary>
@@ -289,8 +289,8 @@ namespace WpfApp1
             this.Close();
             waitingWindow.Close();
         }
-
         #endregion 标题栏事件
+
         #region 音频控制
         private void GoToTheFront(object sender, RoutedEventArgs e)
         {
@@ -328,6 +328,7 @@ namespace WpfApp1
                 }
             }
         }
+
         private void PlayAction()
         {
             timer.Start(10);
@@ -348,6 +349,7 @@ namespace WpfApp1
             play.Content = ">";
             play.Tag = "true";
         }
+
         private void StopAction()
         {
             player.Stop();
@@ -367,15 +369,18 @@ namespace WpfApp1
                 UpdateVolume();
             }
         }
+
         private void UpdateVolume()
         {
             var volume = volumeSlider.Value / 100;
             volumeProvider.Volume = (float)volume;
         }
+
         private void player_OnPlaybackStopped(object obj, StoppedEventArgs arg)
         {
             StopAction();
         }
+
         private void Disposeplayer()
         {
             if (player != null)
@@ -398,9 +403,10 @@ namespace WpfApp1
 
         }
         #endregion
+
         private System.Windows.Point StartPoint;
         private LineGeometry line = new LineGeometry();
-        #region 线位置显示注释代码
+        #region 卷帘窗废弃代码
         /*private void img_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             WheelPoint = e.GetPosition(img);
@@ -503,6 +509,7 @@ namespace WpfApp1
                 volumeSlider.Tag = "Pass";
             }
         }
+
         AddSongs addSongsWindow;
         private void addSong_Click(object sender, RoutedEventArgs e)
         {
@@ -638,6 +645,7 @@ namespace WpfApp1
                 }
             }
         }
+
         string originalLyric;
         string translatedLyric;
         private void addLyric_Click(object sender, RoutedEventArgs e)
@@ -682,6 +690,7 @@ namespace WpfApp1
                 }
             }
         }
+
         private Label a;
         private String s;
         private Point point;
@@ -736,6 +745,7 @@ namespace WpfApp1
                 }
             }
         }
+
         bool isLabelMouseDown;
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
