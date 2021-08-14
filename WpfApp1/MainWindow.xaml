@@ -6,23 +6,32 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Height="613.2" Width="808.2"
+        WindowStartupLocation="CenterScreen"
         WindowStyle="None"
+        MouseUp="Window_MouseUp"
         >
+    <Window.Resources>
+        <RoutedUICommand x:Key="Play" Text="Play" />
+        <RoutedUICommand x:Key="InsertTag" Text="Insert a tag" />
+    </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Gesture="Enter" Command="{StaticResource InsertTag}"/>
+        <KeyBinding Gesture="Space" Command="{StaticResource Play}"/>
+        <!--回退键去除当前标签，delete键删除行，ctrl+z撤销，+y重做，+←到最左，←回退5s
+        -->
+    </Window.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed" CanExecute="NewCommand_CanExecute" />
+        <CommandBinding Command="{StaticResource InsertTag}" Executed="InsertTag_Executed" CanExecute="InsertTag_CanExecute" />
+        <CommandBinding Command="{StaticResource Play}" Executed="Play_Executed" CanExecute="Play_CanExecute" />
     </Window.CommandBindings>
     <Grid Background="Azure" Name="grid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="480"/>
+            <RowDefinition Height="510"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500"/>
-            <ColumnDefinition Width="300"/>
-        </Grid.ColumnDefinitions>
         <DockPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="30" MouseMove="TitleBar_MouseMove" MouseDown="TitleBar_MouseDown" Background="#4C9CFB" DockPanel.Dock="Top">
             <TextBlock Name="txtTitle"  Padding="5,3,2,3" Text="lllLRC Maker" 
                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" FontFamily="微软雅黑"  
@@ -30,7 +39,9 @@
             <StackPanel x:Name="ClassCodeChooser" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
                 <Button HorizontalAlignment="Right" Content="-" x:Name="btn_min"   BorderThickness="0"
                                 Width="60" Height="30" Click="btn_min_Click" Grid.Column="0" Background="Transparent"/>
-                <Button HorizontalAlignment="Right" Content="X" x:Name="btn_max"  BorderThickness="0"
+                <Button HorizontalAlignment="Right" Content="ロ" x:Name="btn_max"  BorderThickness="0"
+                                Width="60" Height="30" Click="btn_max_Click" Background="Transparent"/>
+                <Button HorizontalAlignment="Right" Content="X" x:Name="btn_close"  BorderThickness="0"
                                 Width="60" Height="30" Click="btn_close_Click" Background="Transparent"/>
             </StackPanel>
         </DockPanel>
@@ -40,51 +51,62 @@
                 <MenuItem Header="保存"></MenuItem>
                 <MenuItem Header="退出"></MenuItem>
             </MenuItem>
-            <MenuItem Header="编辑" Height="30"></MenuItem>
-            <MenuItem Header="视窗" Height="30"></MenuItem>
+            <MenuItem Header="设置" Height="30"></MenuItem>
             <MenuItem Header="关于" Height="30"></MenuItem>
         </Menu>
-        <TextBox Grid.Row="3" Grid.Column="1" AcceptsReturn="True">
-            <TextBox.Resources>
-                <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
-                    <VisualBrush.Visual>
-                        <TextBlock FontStyle="Italic" Text="在此添加歌词"/>
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </TextBox.Resources>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <Trigger Property="Text" Value="{x:Null}">
-                            <Setter Property="Background" Value="{StaticResource HintText}"/>
-                        </Trigger>
-                        <Trigger Property="Text" Value="">
-                            <Setter Property="Background" Value="{StaticResource HintText}"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <StackPanel Grid.Row="3" Grid.Column="0" Name="stack" Visibility="Visible">
-            <Button Name="selectFileButton"  Content="添加本地音乐文件" Height="50" Width="200" Margin="0,200,0,0" AllowDrop="True" Click="Button_Click"></Button>
-            <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Name="stack2">
-                <Label Margin="100,0,0,0">或从网络链接添加：</Label>
-                <TextBox Name="link" Width="100" Height="30"></TextBox>
-                <Button Name="selectOnlineFileButton" Content="确定" Height="30" Width="50" Margin="10,0,0,0"  Click="linkButton"/>
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Grid.Row="3" Grid.Column="0" Name="stack1" Visibility="Hidden">
-            <ScrollViewer Name="scrollViewer">
-                <Image Name="img"></Image>
+        
+        <StackPanel Grid.Row="2" Grid.Column="0" Name="stack1" Visibility="Visible" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="430"></ColumnDefinition>
+                    <ColumnDefinition Width="370"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Image x:Name="albumImg" Grid.Column="0" Width="430" Height="430" HorizontalAlignment="Left">
+                    <Image.Effect>
+                        <BlurEffect  Radius="80" RenderingBias="Quality"></BlurEffect>
+                    </Image.Effect>
+                </Image>
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Height="100">
+                    <ItemsControl Background="Transparent" x:Name="preview" Height="100" HorizontalContentAlignment="Center" FontSize="30" BorderThickness="0">
+                        <TextBlock HorizontalAlignment="Center" Name="defaultItem1">无音乐</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" Name="defaultItem2">无歌词</TextBlock>
+                    </ItemsControl>
+                </ScrollViewer>
+                <ScrollViewer x:Name="LyricScroll" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Width="370" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <ListBox x:Name="LyricView" SelectedIndex="0" Height="430" Background="Transparent" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label MouseMove="Label_MouseMove" MouseLeave="Label_MouseLeave" MouseDown="Label_MouseDown" Content="{Binding Tag}"></Label>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Content,Mode=OneTime}" Grid.Column="1"></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
+            
+            <ScrollViewer x:Name="scroll"  VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" Height="70">
+                <Image Name="img" Height="70" Width="800" Stretch="Fill" MouseUp="img_MouseUp"/>
             </ScrollViewer>
-            <Image Name="img1"></Image>
-            <Label Name="current"></Label>
-            <Label Name="total"></Label>
+            <Path x:Name="path" Stroke="Black" MouseUp="img_MouseUp"></Path>
         </StackPanel>
-        <StackPanel Name="playStack"  Orientation="Horizontal" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" Visibility="Hidden">
-            <Button Content="|&lt;" Width="30" Height="30" Click="GoToTheFront"></Button>
-            <Button Name="play"  Content=">" Width="30" Height="30" Click="PlayOrPause" Tag="true"></Button>
-            <Button Content=">|" Width="30" Height="30" Click="GoToTheBack"></Button>
+        <StackPanel Name="playStack"  Orientation="Horizontal" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" Visibility="Visible">
+            
+            <Button x:Name="addSong" Focusable="False" Click="addSong_Click">选择歌曲</Button>
+            
+            <Label Name="current">00:00</Label>
+            <Button Content="|&lt;" Focusable="False" Width="30" Height="30" Click="GoToTheFront"></Button>
+            <Button Name="play" Focusable="False" Content=">" Width="30" Height="30" Click="PlayOrPause" Tag="true"></Button>
+            <Button Content=">|" Focusable="False" Width="30" Height="30" Click="GoToTheBack"></Button>
+            <Label Name="total">00:00</Label>
+            <Button x:Name="volume" Focusable="False" Click="volume_Click">音量</Button>
+            <Slider x:Name="volumeSlider" Focusable="False" ValueChanged="volume_ValueChanged" Value="100" Maximum="100" Minimum="0" IsMoveToPointEnabled="True" Width="70" Tag="Pass"></Slider>
+            <Button x:Name="addLyric" Focusable="False" Click="addLyric_Click">添加歌词</Button>
         </StackPanel>
 
 

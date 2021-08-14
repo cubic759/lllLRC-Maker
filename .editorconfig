@@ -1,0 +1,10 @@
+﻿[*.{cs,vb}]
+
+# IDE0049: 简化名称
+dotnet_diagnostic.IDE0049.severity = none
+
+# IDE0044: 添加只读修饰符
+dotnet_diagnostic.IDE0044.severity = none
+
+# IDE0040: 添加可访问性修饰符
+dotnet_diagnostic.IDE0040.severity = suggestion
