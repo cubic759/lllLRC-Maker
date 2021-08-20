@@ -135,6 +135,11 @@ namespace WpfApp1
             player.PlaybackStopped += player_OnPlaybackStopped;
             _ = Dispatcher.BeginInvoke((Action)delegate
             {
+                if (volumeSlider.Tag.ToString() == "Mute")
+                {
+                    volumeProvider.Volume = 0;
+                    volBefore = 100;
+                }
                 total.Content = duration.ToString(@"mm\:ss");
                 for (int i = 0; i < preview.Items.Count; i++)
                 {
@@ -177,8 +182,8 @@ namespace WpfApp1
                 var timeTag = TimeSpan.FromMilliseconds(position);
                 _ = Dispatcher.BeginInvoke((Action)delegate
                 {
-                    line.StartPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds - scroll.HorizontalOffset, 0);
-                    line.EndPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds - scroll.HorizontalOffset, -70);
+                    line.StartPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, 0);
+                    line.EndPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, -70);
                     path.Data = line;
                     timerLabel.Content = timeTag.ToString(@"mm\:ss\.ff");
                     current.Content = currentTime.ToString(@"mm\:ss");
@@ -274,10 +279,14 @@ namespace WpfApp1
             if (this.WindowState == WindowState.Maximized)
             {
                 this.WindowState = WindowState.Normal; //设置窗口还原
+                maximizeImage.SetResourceReference(Image.SourceProperty, "maximizeDrawingImage");
+                maximizeImage.Height = 11;
             }
             else
             {
                 this.WindowState = WindowState.Maximized; //设置窗口最大化
+                maximizeImage.SetResourceReference(Image.SourceProperty, "maximize1DrawingImage");
+                maximizeImage.Height = 12;
             }
         }
 
@@ -298,6 +307,12 @@ namespace WpfApp1
             {
                 reader.CurrentTime = TimeSpan.Zero;
                 position = 0;
+                if (player.PlaybackState != PlaybackState.Playing)
+                {
+                    line.StartPoint = new Point(0, 0);
+                    line.EndPoint = new Point(0, -70);
+                    path.Data = line;
+                }
                 current.Content = reader.CurrentTime.ToString(@"mm\:ss");
                 timerLabel.Content = TimeSpan.FromMilliseconds(position).ToString(@"mm\:ss\.ff");
             }
@@ -307,8 +322,12 @@ namespace WpfApp1
         {
             if (isInitiated)
             {
+                StopAction();
                 reader.CurrentTime = reader.TotalTime;
                 position = reader.TotalTime.TotalMilliseconds;
+                line.StartPoint = new Point(img.Width * reader.TotalTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, 0);
+                line.EndPoint = new Point(img.Width * reader.TotalTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, -70);
+                path.Data = line;
                 current.Content = reader.CurrentTime.ToString(@"mm\:ss");
                 timerLabel.Content = TimeSpan.FromMilliseconds(position).ToString(@"mm\:ss\.ff");
             }
@@ -338,7 +357,8 @@ namespace WpfApp1
                 reader.CurrentTime = TimeSpan.Zero;
                 position = 0;
             }
-            play.Content = "||";
+            playImage.SetResourceReference(Image.SourceProperty, "pauseDrawingImage");
+            play.ToolTip = "暂停 Space";
             play.Tag = "false";
         }
 
@@ -346,7 +366,8 @@ namespace WpfApp1
         {
             player.Pause();
             timer.Stop();
-            play.Content = ">";
+            playImage.SetResourceReference(Image.SourceProperty, "playDrawingImage");
+            play.ToolTip = "播放 Space";
             play.Tag = "true";
         }
 
@@ -357,7 +378,8 @@ namespace WpfApp1
             position = 0;
             _ = Dispatcher.BeginInvoke((Action)delegate
             {
-                play.Content = ">";
+                playImage.SetResourceReference(Image.SourceProperty, "playDrawingImage");
+                play.ToolTip = "播放 Space";
                 play.Tag = "true";
             });
         }
@@ -497,14 +519,18 @@ namespace WpfApp1
         {
             if (volumeSlider.Tag.ToString() == "Pass")
             {
-                volume.Content = "音量/";
+                volumeImage.SetResourceReference(Image.SourceProperty, "volume_muteDrawingImage");
+                volume.ToolTip = "解除静音";
+                volumeImage.Height = 30;
                 volBefore = volumeSlider.Value;
                 volumeSlider.Value = 0;
                 volumeSlider.Tag = "Mute";
             }
             else
             {
-                volume.Content = "音量";
+                volumeImage.SetResourceReference(Image.SourceProperty, "volumeDrawingImage");
+                volume.ToolTip = "静音";
+                volumeImage.Height = 25;
                 volumeSlider.Value = volBefore;
                 volumeSlider.Tag = "Pass";
             }
@@ -656,11 +682,11 @@ namespace WpfApp1
             {
                 addLyrics.SetOriginalLyric(originalLyric);
             }
-            if (addLyrics.hasTranslatedLyric()&&translatedLyric!=null&&translatedLyric!="")
+            if (addLyrics.hasTranslatedLyric() && translatedLyric != null && translatedLyric != "")
             {
                 addLyrics.setTranslatedLyric(translatedLyric);
             }
-            
+
             addLyrics.ShowDialog();
             if (addLyrics.DialogResult == true)
             {

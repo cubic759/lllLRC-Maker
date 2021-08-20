@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace WpfApp1
@@ -11,10 +10,12 @@ namespace WpfApp1
     public partial class AddSongs : Window
     {
         private String url = "";
+        private String fileName = "";
         private bool hasFile = false;
         public AddSongs()
         {
             InitializeComponent();
+            this.ShowInTaskbar = false;
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -24,30 +25,25 @@ namespace WpfApp1
             bool? result = ofd.ShowDialog();
             if (result == true)
             {
-                String fileName = ofd.FileName;
-                url = fileName;
+                fileName = ofd.FileName;
                 hasFile = true;
-                FileName.Content = url;
+                FileName.Content = fileName;
                 selectFileButton.Visibility = Visibility.Hidden;
                 fileInfo.Visibility = Visibility.Visible;
-
             }
         }
         private void linkButton(object sender, RoutedEventArgs e)
         {
-            if (!hasFile)
+            if (!hasFile)//非本地
             {
                 url = link.Text;
-                if (url == "" || !url.Contains("https://music.163.com/#/song?id="))
+                if (url == "")
                 {
-                    if (url != "")
-                    {
-                        MessageBox.Show("请输入有效链接");
-                    }
-                    else
-                    {
-                        DialogResult = false;
-                    }
+                    DialogResult = false;
+                }
+                else if (!url.Contains("https://music.163.com/#/song?id="))
+                {
+                    MessageBox.Show("请输入有效链接");
                 }
                 else
                 {
@@ -63,6 +59,7 @@ namespace WpfApp1
                 }
                 else
                 {
+                    url = fileName;
                     DialogResult = true;
                     Close();
                 }

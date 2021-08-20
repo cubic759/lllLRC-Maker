@@ -7,10 +7,100 @@
         mc:Ignorable="d"
         Height="613.2" Width="808.2"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
         MouseUp="Window_MouseUp"
-        >
+        WindowStyle="None"
+    >
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9"
+            ResizeBorderThickness="3"/>
+    </WindowChrome.WindowChrome>
     <Window.Resources>
+        <DrawingImage x:Key="file_earmark_musicDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M11,6.64A1,1,0,0,0,9.757,5.67L8.757,5.92A1,1,0,0,0,8,6.89L8,11.196A2.572,2.572,0,0,0,7,11C6.5,11 6.026,11.134 5.662,11.377 5.302,11.617 5,12.005 5,12.5 5,12.995 5.301,13.383 5.662,13.623 6.026,13.866 6.501,14 7,14 7.5,14 7.974,13.866 8.338,13.623 8.698,13.383 9,12.995 9,12.5L9,8.89 11,8.39 11,6.64z" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M14,14L14,4.5 9.5,0 4,0A2,2,0,0,0,2,2L2,14A2,2,0,0,0,4,16L12,16A2,2,0,0,0,14,14z M9.5,3A1.5,1.5,0,0,0,11,4.5L13,4.5 13,14A1,1,0,0,1,12,15L4,15A1,1,0,0,1,3,14L3,2A1,1,0,0,1,4,1L9.5,1 9.5,3z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="file_earmark_textDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M5.5,7A0.5,0.5,0,0,0,5.5,8L10.5,8A0.5,0.5,0,0,0,10.5,7L5.5,7z M5,9.5A0.5,0.5,0,0,1,5.5,9L10.5,9A0.5,0.5,0,0,1,10.5,10L5.5,10A0.5,0.5,0,0,1,5,9.5z M5,11.5A0.5,0.5,0,0,1,5.5,11L7.5,11A0.5,0.5,0,0,1,7.5,12L5.5,12A0.5,0.5,0,0,1,5,11.5z" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M9.5,0L4,0A2,2,0,0,0,2,2L2,14A2,2,0,0,0,4,16L12,16A2,2,0,0,0,14,14L14,4.5 9.5,0z M9.5,1L9.5,3A1.5,1.5,0,0,0,11,4.5L13,4.5 13,14A1,1,0,0,1,12,15L4,15A1,1,0,0,1,3,14L3,2A1,1,0,0,1,4,1L9.5,1z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="pauseDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M6,3.5A0.5,0.5,0,0,1,6.5,4L6.5,12A0.5,0.5,0,0,1,5.5,12L5.5,4A0.5,0.5,0,0,1,6,3.5z M10,3.5A0.5,0.5,0,0,1,10.5,4L10.5,12A0.5,0.5,0,0,1,9.5,12L9.5,4A0.5,0.5,0,0,1,10,3.5z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="playDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M10.804,8L5,4.633 5,11.367 10.804,8z M11.596,7.304A0.802,0.802,0,0,1,11.596,8.696L5.233,12.388C4.713,12.69,4,12.345,4,11.692L4,4.308C4,3.655,4.713,3.31,5.233,3.612L11.596,7.304z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="skip_endDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M12.5,4A0.5,0.5,0,0,0,11.5,4L11.5,7.248 5.233,3.612C4.713,3.31,4,3.655,4,4.308L4,11.692C4,12.345,4.713,12.69,5.233,12.388L11.5,8.752 11.5,12A0.5,0.5,0,0,0,12.5,12L12.5,4z M5,4.633L10.804,8 5,11.367 5,4.633z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="skip_startDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M4,4A0.5,0.5,0,0,1,5,4L5,7.248 11.267,3.612C11.787,3.31,12.5,3.655,12.5,4.308L12.5,11.692C12.5,12.345,11.787,12.69,11.267,12.388L5,8.752 5,12A0.5,0.5,0,0,1,4,12L4,4z M11.5,4.633L5.696,8 11.5,11.367 11.5,4.633z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="volume_muteDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M16,16z M0,0z M6.717,3.55A0.5,0.5,0,0,1,7,4L7,12A0.5,0.5,0,0,1,6.188,12.39L3.825,10.5 1.5,10.5A0.5,0.5,0,0,1,1,10L1,6A0.5,0.5,0,0,1,1.5,5.5L3.825,5.5 6.188,3.61A0.5,0.5,0,0,1,6.717,3.55z M6,5.04L4.312,6.39A0.5,0.5,0,0,1,4,6.5L2,6.5 2,9.5 4,9.5A0.5,0.5,0,0,1,4.312,9.61L6,10.96 6,5.04z M13.854,5.646A0.5,0.5,0,0,1,13.854,6.354L12.207,8 13.854,9.646A0.5,0.5,0,0,1,13.146,10.354L11.5,8.707 9.854,10.354A0.5,0.5,0,0,1,9.146,9.646L10.793,8 9.146,6.354A0.5,0.5,0,1,1,9.854,5.646L11.5,7.293 13.146,5.646A0.5,0.5,0,0,1,13.854,5.646z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="volumeDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M701.78,343.629C691.402,322.389 664.604,315.293 645.071,328.603 625.537,341.917 622.34,369.451 638.305,386.883 687.546,463.025 687.546,560.975 638.305,637.119 622.34,654.551 625.537,682.087 645.071,695.399 664.604,708.71 691.402,701.61 701.781,680.376 M888.625,858.76C1050.448,655.897 1050.448,368.1 888.625,165.242 876.086,146.712 850.443,142.738 832.882,156.604 815.322,170.467 813.234,196.33 828.346,212.83 965.528,388.687 965.528,635.313 828.346,811.174 813.234,827.674 815.322,853.537 832.882,867.397 850.445,881.26 876.086,877.287 888.625,858.76z M239.651,324.077C317.926,261.961 396.196,199.838 474.471,137.72 497.958,119.077 532.589,135.808 532.589,165.794L532.589,858.207C532.589,888.196,497.959,904.92,474.47,886.28L239.651,699.92 51.201,699.92C31.407,699.92,15.363,683.874,15.363,664.08L15.363,359.919C15.363,340.127,31.407,324.079,51.202,324.079L239.652,324.077z M92.163,400.877L92.163,623.123 266.425,623.123 455.792,773.407 455.792,250.591 266.425,400.879 92.163,400.879z M695.539,689.537C770.867,583.162,770.867,440.836,695.539,334.462" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="closeDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1030 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1030,1024z M0,0z M566.613,512L846.507,232.107C860.16,218.453 860.16,197.973 846.507,184.32 832.853,170.667 812.373,170.667 798.72,184.32L512,457.387 238.933,184.32C225.28,170.667 204.8,170.667 191.147,184.32 177.493,197.973 177.493,218.453 191.147,232.107L471.04,512 191.147,791.893C177.493,805.547 177.493,826.027 191.147,839.68 204.8,853.333 225.28,853.333 238.933,839.68L518.827,559.787 798.72,839.68C812.373,853.333 832.853,853.333 846.507,839.68 860.16,826.027 860.16,805.547 846.507,791.893L566.613,512z M566.613,512" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="maximizeDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M938.666667,1024L85.333333,1024A85.333333,85.333333,0,0,1,0,938.666667L0,85.333333A85.333333,85.333333,0,0,1,85.333333,0L938.666667,0A85.333333,85.333333,0,0,1,1024,85.333333L1024,938.666667A85.333333,85.333333,0,0,1,938.666667,1024z M136.533333,136.533333L136.533333,887.466667 887.466667,887.466667 887.466667,136.533333z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="minimizeDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF241F20" Geometry="F1 M1024,1024z M0,0z M520.192,454.656L878.592,454.656C920.064,454.656 947.712,491.008 934.912,528.896 927.232,550.912 911.36,563.712 887.808,566.784 883.712,567.296 879.104,567.296 875.008,567.296L164.352,567.296C126.464,567.296 101.376,544.256 101.888,509.952 102.4,478.208 126.464,454.656 160.256,454.656L520.192,454.656z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="maximize1DrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M960,0L320,0C284.672,0,256,28.672,256,64L256,256 64,256C28.672,256,0,284.672,0,320L0,960C0,995.328,28.672,1024,64,1024L704,1024C739.328,1024,768,995.328,768,960L768,768 960,768C995.328,768,1024,739.328,1024,704L1024,64C1024,28.672,995.328,0,960,0z M640,896L128,896 128,384 640,384 640,896z M896,640L768,640 768,320C768,284.672,739.328,256,704,256L384,256 384,128 896,128 896,640z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
         <RoutedUICommand x:Key="Play" Text="Play" />
         <RoutedUICommand x:Key="InsertTag" Text="Insert a tag" />
         <SolidColorBrush x:Key="MenuItem.Highlight.Background" Color="#3D26A0DA"/>
@@ -331,12 +421,18 @@
                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" FontFamily="微软雅黑"  
                    Foreground="White"/>
             <StackPanel x:Name="ClassCodeChooser" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                <Button HorizontalAlignment="Right" Content="-" x:Name="btn_min"   BorderThickness="0"
-                                Width="60" Height="30" Click="btn_min_Click" Grid.Column="0" Background="Transparent"/>
-                <Button HorizontalAlignment="Right" Content="ロ" x:Name="btn_max"  BorderThickness="0"
-                                Width="60" Height="30" Click="btn_max_Click" Background="Transparent"/>
-                <Button HorizontalAlignment="Right" Content="X" x:Name="btn_close"  BorderThickness="0"
-                                Width="60" Height="30" Click="btn_close_Click" Background="Transparent"/>
+                <Button HorizontalAlignment="Right" x:Name="btn_min"   BorderThickness="0"
+                                Width="60" Height="30" Click="btn_min_Click" Grid.Column="0" Background="Transparent">
+                    <Image Source="{StaticResource minimizeDrawingImage}" Width="15"></Image>
+                </Button>
+                <Button HorizontalAlignment="Right" x:Name="btn_max"  BorderThickness="0"
+                                Width="60" Height="30" Click="btn_max_Click" Background="Transparent">
+                    <Image x:Name="maximizeImage" Source="{StaticResource maximizeDrawingImage}" Height="11" ></Image>
+                </Button>
+                <Button HorizontalAlignment="Right" x:Name="btn_close"  BorderThickness="0"
+                                Width="60" Height="30" Click="btn_close_Click" Background="Transparent">
+                    <Image Source="{StaticResource closeDrawingImage}" Height="18"></Image>
+                </Button>
             </StackPanel>
         </DockPanel>
         <Menu Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="800" Background="Azure">
@@ -391,16 +487,27 @@
         </StackPanel>
         <StackPanel Name="playStack"  Orientation="Horizontal" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" Visibility="Visible">
 
-            <Button x:Name="addSong" Focusable="False" Click="addSong_Click">选择歌曲</Button>
-
-            <Label Name="current">00:00</Label>
-            <Button Content="|&lt;" Focusable="False" Width="30" Height="30" Click="GoToTheFront"></Button>
-            <Button Name="play" Focusable="False" Content=">" Width="30" Height="30" Click="PlayOrPause" Tag="true"></Button>
-            <Button Content=">|" Focusable="False" Width="30" Height="30" Click="GoToTheBack"></Button>
-            <Label Name="total">00:00</Label>
-            <Button x:Name="volume" Focusable="False" Click="volume_Click">音量</Button>
-            <Slider x:Name="volumeSlider" Focusable="False" ValueChanged="volume_ValueChanged" Value="100" Maximum="100" Minimum="0" IsMoveToPointEnabled="True" Width="70" Tag="Pass"></Slider>
-            <Button x:Name="addLyric" Focusable="False" Click="addLyric_Click">添加歌词</Button>
+            <Button x:Name="addSong" Width="30" Height="30" BorderThickness="0" Background="Transparent" Focusable="False" Click="addSong_Click" ToolTip="添加歌曲">
+                <Image Source="{StaticResource file_earmark_musicDrawingImage}"></Image>
+            </Button>
+            <Label Name="current" VerticalAlignment="Center">00:00</Label>
+            <Button Focusable="False" Width="30" Height="30" BorderThickness="0" Background="Transparent" Click="GoToTheFront" ToolTip="跳到开头 Ctrl+左">
+                <Image Source="{StaticResource skip_startDrawingImage}"></Image>
+            </Button>
+            <Button Name="play" Focusable="False" Width="30" Height="30" BorderThickness="0" Background="Transparent" Click="PlayOrPause" Tag="true" ToolTip="播放 Space">
+                <Image x:Name="playImage" Source="{StaticResource playDrawingImage}"></Image>
+            </Button>
+            <Button Focusable="False" Width="30" Height="30" BorderThickness="0" Background="Transparent" Click="GoToTheBack" ToolTip="跳到末尾 Ctrl+右">
+                <Image Source="{StaticResource skip_endDrawingImage}"></Image>
+            </Button>
+            <Label Name="total" VerticalAlignment="Center">00:00</Label>
+            <Button x:Name="volume" Focusable="False" Height="30" Width="30" BorderThickness="0" Background="Transparent" Click="volume_Click" ToolTip="静音">
+                <Image x:Name="volumeImage" Source="{StaticResource volumeDrawingImage}" Height="25"></Image>
+            </Button>
+            <Slider x:Name="volumeSlider" Focusable="False" VerticalAlignment="Center" ValueChanged="volume_ValueChanged" Value="100" Maximum="100" Minimum="0" IsMoveToPointEnabled="True" Width="70" Tag="Pass"></Slider>
+            <Button x:Name="addLyric" Height="30" Width="30" Focusable="False" BorderThickness="0" Background="Transparent" Click="addLyric_Click" ToolTip="添加歌词">
+                <Image Source="{StaticResource file_earmark_textDrawingImage}"></Image>
+            </Button>
         </StackPanel>
 
 
