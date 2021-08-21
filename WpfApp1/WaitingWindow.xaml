@@ -8,6 +8,7 @@
         Title="WaitingWindow" Height="150" Width="300"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
+        ShowInTaskbar="False"
         >
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBlock FontSize="20" Name="Text"></TextBlock>

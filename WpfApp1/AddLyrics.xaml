@@ -7,8 +7,12 @@
         mc:Ignorable="d"
         Title="AddLyrics" Height="296.4" Width="473.2"
         WindowStartupLocation="CenterOwner"
-        WindowStyle="ToolWindow"
+        WindowStyle="None"
         >
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9"
+            ResizeBorderThickness="3"/>
+    </WindowChrome.WindowChrome>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>

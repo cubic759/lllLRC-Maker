@@ -50,7 +50,6 @@ namespace WpfApp1
         {
             String text = originalText.Text;
             originalText.Text = text.Replace("\r\n\r\n", "\r\n");
-            Console.WriteLine(text);
         }
         public String getOriginalLyric()
         {

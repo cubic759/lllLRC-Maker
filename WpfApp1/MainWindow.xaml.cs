@@ -24,18 +24,18 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region 变量
-        private WaveOutEvent player;
-        private AudioFileReader reader;
-        private VolumeSampleProvider volumeProvider;
-        private CancellationTokenSource cts;
+        #region 重要变量
+        private WaveOutEvent player;//播放器
+        private AudioFileReader reader;//文件读取
+        private VolumeSampleProvider volumeProvider;//程序音量控制
+        private CancellationTokenSource cts;//取消线程？
         private bool sliderLock = false; // 逻辑锁，当为true时不更新界面上的进度
-        private bool isInitiated = false;
-        private double position = 0;
-        private Label timerLabel = new Label();
+        private bool isInitiated = false;//判断是否已初始化，避免空指针异常
+        private double position = 0;//音频进度条位置
+        private Label timerLabel = new Label();//公用的mm:ss.ff时间
         private string root = "D:\\lllLRC Maker";//根目录
-        private Class1 timer = new Class1();
-        private WaitingWindow waitingWindow = new WaitingWindow();
+        private Class1 timer = new Class1();//网上找的毫秒表
+        private WaitingWindow waitingWindow = new WaitingWindow();//显示正在操作的信息
         #endregion
         public MainWindow()
         {
@@ -79,7 +79,7 @@ namespace WpfApp1
             }
         }
 
-        int itemAfter = 0;
+        int itemAfter = 0;//歌词已选择位置
         private void InsertTag_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (this.IsActive)
@@ -106,12 +106,16 @@ namespace WpfApp1
                 items.Insert(itemAfter, a);
                 LyricView.Items.Refresh();
                 LyricView.SelectedIndex++;
-                LyricScroll.ScrollToVerticalOffset(LyricScroll.VerticalOffset);
+                if (itemAfter + 1 < LyricView.Items.Count)
+                {
+                    LyricView.ScrollIntoView(LyricView.Items[itemAfter + 1]);
+                }
             }
         }
         #endregion 命令
 
         #region 主要方法
+        bool noSongCanceled = false;
         public void initialization(string fileName)
         {
             _ = Dispatcher.BeginInvoke((Action)delegate
@@ -141,12 +145,16 @@ namespace WpfApp1
                     volBefore = 100;
                 }
                 total.Content = duration.ToString(@"mm\:ss");
-                for (int i = 0; i < preview.Items.Count; i++)
+                if (!noSongCanceled)
                 {
-                    if (((TextBlock)preview.Items.GetItemAt(i)).Text == "无音乐")
+                    for (int i = 0; i < preview.Items.Count; i++)
                     {
-                        preview.Items.RemoveAt(i);
-                        break;
+                        if (((TextBlock)preview.Items.GetItemAt(i)).Text == "无音乐")
+                        {
+                            preview.Items.RemoveAt(i);
+                            noSongCanceled = true;
+                            break;
+                        }
                     }
                 }
             });
@@ -154,7 +162,7 @@ namespace WpfApp1
             Task.Run(() => StartUpdateProgress());// 界面更新线程
         }
 
-        private void StartUpdateProgress()
+        private void StartUpdateProgress()//循环单开一个函数
         {
             while (!cts.IsCancellationRequested)
             {
@@ -422,12 +430,11 @@ namespace WpfApp1
                 Disposeplayer();
                 isInitiated = false;
             }
-
         }
         #endregion
 
-        private System.Windows.Point StartPoint;
-        private LineGeometry line = new LineGeometry();
+        private System.Windows.Point StartPoint;//进度条上的点击位
+        private LineGeometry line = new LineGeometry();//进度条显示线段
         #region 卷帘窗废弃代码
         /*private void img_MouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -514,7 +521,7 @@ namespace WpfApp1
             UpdateProgress();
         }
 
-        double volBefore = 0;
+        double volBefore = 0;//记录先前音量
         private void volume_Click(object sender, RoutedEventArgs e)
         {
             if (volumeSlider.Tag.ToString() == "Pass")
@@ -536,7 +543,7 @@ namespace WpfApp1
             }
         }
 
-        AddSongs addSongsWindow;
+        AddSongs addSongsWindow;//添加音乐窗口
         private void addSong_Click(object sender, RoutedEventArgs e)
         {
             addSongsWindow = new AddSongs();
@@ -674,12 +681,17 @@ namespace WpfApp1
 
         string originalLyric;
         string translatedLyric;
+        bool noLyricCanceled = false;
         private void addLyric_Click(object sender, RoutedEventArgs e)
         {
             AddLyrics addLyrics = new AddLyrics();
             addLyrics.Owner = this;
-            if (originalLyric != null && originalLyric != "")
+            if (originalLyric != null && originalLyric != "")//从listbox中获得数据
             {
+                for (int i = 0; i < LyricView.Items.Count; i++)
+                {
+
+                }
                 addLyrics.SetOriginalLyric(originalLyric);
             }
             if (addLyrics.hasTranslatedLyric() && translatedLyric != null && translatedLyric != "")
@@ -690,93 +702,67 @@ namespace WpfApp1
             addLyrics.ShowDialog();
             if (addLyrics.DialogResult == true)
             {
-                originalLyric = addLyrics.getOriginalLyric();
-                translatedLyric = addLyrics.getTranslatedLyric();
-            }
-            else
-            {
-                originalLyric = addLyrics.getOriginalLyric();
-            }
-            if (originalLyric != "" && originalLyric != null)
-            {
-                string[] stringArray = originalLyric.Replace("\r\n", "\n").Split('\n');
-                List<LyricData> items = new List<LyricData>();
-                for (int i = 0; i < stringArray.Length; i++)
+                if (addLyrics.hasTranslatedLyric())
                 {
-                    items.Add(new LyricData() { Tag = "", Content = stringArray[i] });
+                    originalLyric = addLyrics.getOriginalLyric();
+                    translatedLyric = addLyrics.getTranslatedLyric();
                 }
-                LyricView.ItemsSource = items;
-                for (int i = 0; i < preview.Items.Count; i++)
+                else
                 {
-                    if (((TextBlock)preview.Items.GetItemAt(i)).Text == "无歌词")
+                    originalLyric = addLyrics.getOriginalLyric();
+                }
+                if (originalLyric != "" && originalLyric != null)//把数据塞进listbox
+                {
+                    string[] stringArray = originalLyric.Replace("\r\n", "\n").Split('\n');
+                    List<LyricData> items = new List<LyricData>();
+                    for (int i = 0; i < stringArray.Length; i++)
                     {
-                        preview.Items.RemoveAt(i);
-                        break;
+                        items.Add(new LyricData() { Tag = "", Content = stringArray[i], Index = i });
+                    }
+                    LyricView.ItemsSource = items;
+                    if (!noLyricCanceled)
+                    {
+                        for (int i = 0; i < preview.Items.Count; i++)
+                        {
+                            if (((TextBlock)preview.Items.GetItemAt(i)).Text == "无歌词")
+                            {
+                                preview.Items.RemoveAt(i);
+                                noLyricCanceled = true;
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private Label a;
-        private String s;
-        private Point point;
         private void Label_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isLabelMouseDown)
+            Label label = (Label)sender;
+            String s = (string)label.Content;
+            if (s != "" && s != null)
             {
-                a = (Label)sender;
-                s = (string)a.Content;
-                if (s != "" && s != null)
-                {
-                    this.Cursor = Cursors.SizeNS;
-                }
-            }
-            else if (isLabelMouseDown)
-            {
-                Label b = (Label)sender;
-                if (b == a)
-                {
-                    a = b;
-                    s = (string)a.Content;
-                    if (s != null && s != "")
-                    {
-                        double value = e.GetPosition(a).Y - point.Y;
-                        TimeSpan duration = TimeSpan.ParseExact(s, @"mm\:ss\.ff", null);
-                        Console.WriteLine(value);
-                        if (value > 0)// \|
-                        {
-                            if (duration > TimeSpan.FromMilliseconds(50))
-                            {
-                                duration = duration - TimeSpan.FromMilliseconds(10);
-                            }
-                            else
-                            {
-                                duration = TimeSpan.Zero;
-                            }
-                        }
-                        else if (value < 0)// |\
-                        {
-                            if (duration < reader.TotalTime - TimeSpan.FromMilliseconds(50))
-                            {
-                                duration = duration + TimeSpan.FromMilliseconds(10);
-                            }
-                            else
-                            {
-                                duration = reader.TotalTime;
-                            }
-                        }
-                        a.Content = duration.ToString(@"mm\:ss\.ff");
-                        point = e.GetPosition(a);
-                    }
-                }
+                this.Cursor = Cursors.SizeNS;
             }
         }
 
-        bool isLabelMouseDown;
+        private bool isLabelMouseDown;
+        private Label mouseDownLabel;
+        private Point point;
+        private int selectedIndex = 0;//点击的标签所属位置
+        private string labelString = "";
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            isLabelMouseDown = true;
-            point = e.GetPosition((Label)sender);
+            Label label = (Label)sender;
+            string s = (string)label.Content;
+            if (s != "" && s != null)
+            {
+                isLabelMouseDown = true;
+                mouseDownLabel = label;
+                point = e.GetPosition(mouseDownLabel);
+                selectedIndex = (int)label.Tag;
+                labelString = (string)mouseDownLabel.Content;
+            }
         }
 
         private void Window_MouseUp(object sender, MouseButtonEventArgs e)
@@ -785,14 +771,54 @@ namespace WpfApp1
             {
                 isLabelMouseDown = false;
                 this.Cursor = Cursors.Arrow;
+                LyricView.Items.Refresh();
             }
         }
 
         private void Label_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton != MouseButtonState.Pressed)
+            if (!isLabelMouseDown)
             {
                 this.Cursor = Cursors.Arrow;
+            }
+        }
+
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isLabelMouseDown)
+            {
+                double value = e.GetPosition(mouseDownLabel).Y - point.Y;
+                TimeSpan duration = TimeSpan.ParseExact(labelString, @"mm\:ss\.ff", null);
+                if (value > 0)// \|
+                {
+                    if (duration > TimeSpan.FromMilliseconds(10))
+                    {
+                        duration = duration - TimeSpan.FromMilliseconds(value);
+                    }
+                    else
+                    {
+                        duration = TimeSpan.Zero;
+                    }
+                }
+                else if (value < 0)// |\
+                {
+                    if (duration < reader.TotalTime - TimeSpan.FromMilliseconds(10))
+                    {
+                        duration = duration - TimeSpan.FromMilliseconds(value);
+                    }
+                    else
+                    {
+                        duration = reader.TotalTime;
+                    }
+                }
+                mouseDownLabel.Content = duration.ToString(@"mm\:ss\.ff");
+                ICollectionView view = (ICollectionView)CollectionViewSource.GetDefaultView(LyricView.ItemsSource);
+                List<LyricData> items = new List<LyricData>();
+                items = (List<LyricData>)view.SourceCollection;
+                LyricData c = items[selectedIndex];
+                c.Tag = duration.ToString(@"mm\:ss\.ff");
+                items.RemoveAt(selectedIndex);
+                items.Insert(selectedIndex, c);
             }
         }
     }
@@ -800,5 +826,6 @@ namespace WpfApp1
     {
         public string Tag { get; set; }
         public string Content { get; set; }
+        public int Index { get; set; }
     }
 }
