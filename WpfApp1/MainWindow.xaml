@@ -9,6 +9,9 @@
         WindowStartupLocation="CenterScreen"
         MouseUp="Window_MouseUp"
         MouseMove="Window_MouseMove"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragEnter="Window_DragEnter"
         WindowStyle="None"
     >
     <WindowChrome.WindowChrome>

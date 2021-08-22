@@ -821,6 +821,24 @@ namespace WpfApp1
                 items.Insert(selectedIndex, c);
             }
         }
+
+        private void Window_Drop(object sender, DragEventArgs e)//
+        {
+            string fileName = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+            
+        }
+
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Link;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
     }
     public class LyricData
     {
