@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -41,6 +42,7 @@ namespace WpfApp1
         {
             InitializeComponent();
         }
+
         #region 命令
         private void NewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)//执行条件
         {
@@ -244,13 +246,14 @@ namespace WpfApp1
         /// </summary>
         private void TitleBar_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (isClickOnTitle)
             {
                 DragMove();
             }
         }
 
         int i = 0;
+        bool isClickOnTitle = false;
         /// <summary>
         /// 标题栏双击事件
         /// </summary>
@@ -261,6 +264,7 @@ namespace WpfApp1
             timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             timer.Tick += (s, e1) => { timer.IsEnabled = false; i = 0; };
             timer.IsEnabled = true;
+            isClickOnTitle = true;
 
             if (i % 2 == 0)
             {
@@ -269,6 +273,14 @@ namespace WpfApp1
                 this.WindowState = this.WindowState == WindowState.Maximized ?
                               WindowState.Normal : WindowState.Maximized;
             }
+        }
+
+        /// <summary>
+        /// 标题栏松开事件
+        /// </summary>
+        private void DockPanel_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            isClickOnTitle = false;
         }
 
         /// <summary>
@@ -512,13 +524,23 @@ namespace WpfApp1
         }*/
         #endregion 卷帘窗废弃代码
 
+        bool isClickOnImg = false;
+        private void img_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isClickOnImg = true;
+        }
+
         private void img_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            StartPoint = e.GetPosition(img);
-            // 释放鼠标时，应用目标进度
-            reader.CurrentTime = TimeSpan.FromMilliseconds(StartPoint.X / img.Width * reader.TotalTime.TotalMilliseconds);
-            position = reader.CurrentTime.TotalMilliseconds;
-            UpdateProgress();
+            if (isClickOnImg)
+            {
+                StartPoint = e.GetPosition(img);
+                // 释放鼠标时，应用目标进度
+                reader.CurrentTime = TimeSpan.FromMilliseconds(StartPoint.X / img.Width * reader.TotalTime.TotalMilliseconds);
+                position = reader.CurrentTime.TotalMilliseconds;
+                UpdateProgress();
+                isClickOnImg = false;
+            }
         }
 
         double volBefore = 0;//记录先前音量
@@ -612,8 +634,7 @@ namespace WpfApp1
 
                 IDocument document = await context.OpenAsync(address);
                 string innerHtml = document.Body.InnerHtml;
-                string temp = innerHtml.Substring(innerHtml.IndexOf("歌手："));
-                temp = temp.Substring(16);
+                string temp = innerHtml.Substring(innerHtml.IndexOf("歌手：")).Substring(16);
                 temp = temp.Substring(0, temp.IndexOf(@""""));
                 if (temp.Contains(" / "))
                 {
@@ -682,17 +703,32 @@ namespace WpfApp1
         string originalLyric;
         string translatedLyric;
         bool noLyricCanceled = false;
-        private void addLyric_Click(object sender, RoutedEventArgs e)
+        private void addLyric_Click(object sender, RoutedEventArgs e)//TODO: 对压缩后的标签歌词的支持
         {
             AddLyrics addLyrics = new AddLyrics();
             addLyrics.Owner = this;
-            if (originalLyric != null && originalLyric != "")//从listbox中获得数据
+            if (originalLyric != null && originalLyric != "")//从LyricView中获得数据
             {
-                for (int i = 0; i < LyricView.Items.Count; i++)
+                string lyric = "";
+                List<LyricData> items = new List<LyricData>();
+                items = (List<LyricData>)LyricView.ItemsSource;
+                for (int i = 0; i < items.Count; i++)
                 {
-
+                    string tag = items[i].Tag;
+                    if (tag != "" && tag != null)
+                    {
+                        lyric += "[" + items[i].Tag + "] " + items[i].Content;
+                    }
+                    else
+                    {
+                        lyric += items[i].Content;
+                    }
+                    if (i != items.Count - 1)
+                    {
+                        lyric += "\r\n";
+                    }
                 }
-                addLyrics.SetOriginalLyric(originalLyric);
+                addLyrics.SetOriginalLyric(lyric);
             }
             if (addLyrics.hasTranslatedLyric() && translatedLyric != null && translatedLyric != "")
             {
@@ -711,13 +747,26 @@ namespace WpfApp1
                 {
                     originalLyric = addLyrics.getOriginalLyric();
                 }
-                if (originalLyric != "" && originalLyric != null)//把数据塞进listbox
+                if (originalLyric != "" && originalLyric != null)//把数据塞进LyricView
                 {
                     string[] stringArray = originalLyric.Replace("\r\n", "\n").Split('\n');
                     List<LyricData> items = new List<LyricData>();
                     for (int i = 0; i < stringArray.Length; i++)
                     {
-                        items.Add(new LyricData() { Tag = "", Content = stringArray[i], Index = i });
+                        Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
+                        if (regex.IsMatch(stringArray[i]))
+                        {
+                            string[] tagContainer = new string[regex.Matches(stringArray[i]).Count];
+                            for (int j = 0; j < tagContainer.Length; j++)
+                            {
+                                tagContainer[j] = regex.Matches(stringArray[i])[j].ToString().Substring(1).Split(']')[0];
+                            }
+                            items.Add(new LyricData() { Tag = tagContainer[0], Content = regex.Split(stringArray[i])[tagContainer.Length].Trim(), Index = i });
+                        }
+                        else
+                        {
+                            items.Add(new LyricData() { Tag = "", Content = stringArray[i], Index = i });
+                        }
                     }
                     LyricView.ItemsSource = items;
                     if (!noLyricCanceled)
@@ -757,6 +806,7 @@ namespace WpfApp1
             string s = (string)label.Content;
             if (s != "" && s != null)
             {
+                MouseHook.OnMouseUp += MouseHookMouseUp;
                 isLabelMouseDown = true;
                 mouseDownLabel = label;
                 point = e.GetPosition(mouseDownLabel);
@@ -765,13 +815,14 @@ namespace WpfApp1
             }
         }
 
-        private void Window_MouseUp(object sender, MouseButtonEventArgs e)
+        private void MouseHookMouseUp(object sender, Point p)
         {
             if (isLabelMouseDown)
             {
                 isLabelMouseDown = false;
                 this.Cursor = Cursors.Arrow;
                 LyricView.Items.Refresh();
+                MouseHook.OnMouseUp -= MouseHookMouseUp;
             }
         }
 
@@ -785,47 +836,50 @@ namespace WpfApp1
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isLabelMouseDown)
+            if (isInitiated)
             {
-                double value = e.GetPosition(mouseDownLabel).Y - point.Y;
-                TimeSpan duration = TimeSpan.ParseExact(labelString, @"mm\:ss\.ff", null);
-                if (value > 0)// \|
+                if (isLabelMouseDown)
                 {
-                    if (duration > TimeSpan.FromMilliseconds(10))
+                    double value = e.GetPosition(mouseDownLabel).Y - point.Y;
+                    TimeSpan duration = TimeSpan.ParseExact(labelString, @"mm\:ss\.ff", null);
+                    if (value > 0)// \|
                     {
-                        duration = duration - TimeSpan.FromMilliseconds(value);
+                        if (duration > TimeSpan.FromMilliseconds(10))
+                        {
+                            duration = duration - TimeSpan.FromMilliseconds(value);
+                        }
+                        else
+                        {
+                            duration = TimeSpan.Zero;
+                        }
                     }
-                    else
+                    else if (value < 0)// |\
                     {
-                        duration = TimeSpan.Zero;
+                        if (duration < reader.TotalTime - TimeSpan.FromMilliseconds(10))
+                        {
+                            duration = duration - TimeSpan.FromMilliseconds(value);
+                        }
+                        else
+                        {
+                            duration = reader.TotalTime;
+                        }
                     }
+                    mouseDownLabel.Content = duration.ToString(@"mm\:ss\.ff");
+                    ICollectionView view = (ICollectionView)CollectionViewSource.GetDefaultView(LyricView.ItemsSource);
+                    List<LyricData> items = new List<LyricData>();
+                    items = (List<LyricData>)view.SourceCollection;
+                    LyricData c = items[selectedIndex];
+                    c.Tag = duration.ToString(@"mm\:ss\.ff");
+                    items.RemoveAt(selectedIndex);
+                    items.Insert(selectedIndex, c);
                 }
-                else if (value < 0)// |\
-                {
-                    if (duration < reader.TotalTime - TimeSpan.FromMilliseconds(10))
-                    {
-                        duration = duration - TimeSpan.FromMilliseconds(value);
-                    }
-                    else
-                    {
-                        duration = reader.TotalTime;
-                    }
-                }
-                mouseDownLabel.Content = duration.ToString(@"mm\:ss\.ff");
-                ICollectionView view = (ICollectionView)CollectionViewSource.GetDefaultView(LyricView.ItemsSource);
-                List<LyricData> items = new List<LyricData>();
-                items = (List<LyricData>)view.SourceCollection;
-                LyricData c = items[selectedIndex];
-                c.Tag = duration.ToString(@"mm\:ss\.ff");
-                items.RemoveAt(selectedIndex);
-                items.Insert(selectedIndex, c);
             }
         }
 
-        private void Window_Drop(object sender, DragEventArgs e)//
+        private void Window_Drop(object sender, DragEventArgs e)//拖放操作
         {
             string fileName = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
-            
+
         }
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -839,6 +893,40 @@ namespace WpfApp1
                 e.Effects = DragDropEffects.None;
             }
         }
+
+        private void LyricView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            List<LyricData> items = new List<LyricData>();
+            items = (List<LyricData>)LyricView.ItemsSource;
+            string tag = items[LyricView.SelectedIndex].Tag;
+            if (tag != "" && tag != null)
+            {
+                if (isInitiated)
+                {
+                    reader.CurrentTime = TimeSpan.ParseExact(tag, @"mm\:ss\.ff", null);
+                    position = reader.CurrentTime.TotalMilliseconds;
+                    UpdateProgress();
+                }
+            }
+        }
+
+        bool IsMousePressed = false;
+        private void ListBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            IsMousePressed = true;
+        }
+
+        private void ListBox_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            IsMousePressed = false;
+        }
+
+        private void ListBox_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (IsMousePressed)
+                (sender as ListBox).ReleaseMouseCapture();
+        }
+
     }
     public class LyricData
     {

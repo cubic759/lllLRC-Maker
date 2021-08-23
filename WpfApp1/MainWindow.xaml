@@ -7,7 +7,6 @@
         mc:Ignorable="d"
         Height="613.2" Width="808.2"
         WindowStartupLocation="CenterScreen"
-        MouseUp="Window_MouseUp"
         MouseMove="Window_MouseMove"
         AllowDrop="True"
         Drop="Window_Drop"
@@ -420,7 +419,7 @@
             <RowDefinition Height="510"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <DockPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="30" MouseMove="TitleBar_MouseMove" MouseDown="TitleBar_MouseDown" Background="#4C9CFB" DockPanel.Dock="Top">
+        <DockPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="30" MouseMove="TitleBar_MouseMove" MouseUp="DockPanel_MouseUp" MouseDown="TitleBar_MouseDown" Background="#4C9CFB" DockPanel.Dock="Top">
             <TextBlock Name="txtTitle"  Padding="5,3,2,3" Text="lllLRC Maker" 
                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" FontFamily="微软雅黑"  
                    Foreground="White"/>
@@ -466,7 +465,7 @@
                         <TextBlock HorizontalAlignment="Center" Name="defaultItem2">无歌词</TextBlock>
                     </ItemsControl>
                 </ScrollViewer>
-                <ListBox x:Name="LyricView" Grid.Column="1" SelectedIndex="0" Height="430" Width="370" Background="Transparent" BorderThickness="0" Focusable="False" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                <ListBox x:Name="LyricView" Grid.Column="1" SelectedIndex="0" Height="430" Width="370" Background="Transparent" BorderThickness="0" Focusable="False" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseDoubleClick="LyricView_MouseDoubleClick" PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="ListBox_PreviewMouseLeftButtonUp" PreviewMouseMove="ListBox_PreviewMouseMove">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -483,7 +482,7 @@
             </Grid>
 
             <ScrollViewer x:Name="scroll" Focusable="False" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" Height="70">
-                <Image Name="img" Height="70" Width="800" Stretch="Fill" MouseUp="img_MouseUp"/>
+                <Image Name="img" Height="70" Width="800" Stretch="Fill" MouseDown="img_MouseDown" MouseUp="img_MouseUp"/>
             </ScrollViewer>
             <Path x:Name="path" Stroke="Black" MouseUp="img_MouseUp"></Path>
         </StackPanel>

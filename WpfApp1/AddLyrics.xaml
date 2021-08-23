@@ -8,6 +8,7 @@
         Title="AddLyrics" Height="296.4" Width="473.2"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
+        ShowInTaskbar="False"
         >
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9"
@@ -30,56 +31,64 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button x:Name="removeEmptyLines" Grid.Column="0" Click="removeEmptyLines_Click">去除空行</Button>
-            <Button Grid.Column="1"></Button>
-            <Button Grid.Column="2"></Button>
-            <CheckBox x:Name="setTranslate" Click="setTranslate_Click" Grid.Column="3" VerticalAlignment="Bottom">添加翻译</CheckBox>
-            <Button IsDefault="True" Grid.Column="4" Click="Button_Click">确定</Button>
-            <Button IsCancel="True" Grid.Column="5" HorizontalContentAlignment="Center">取消</Button>
+            <Button x:Name="removeEmptyLines" Grid.Column="0" Click="removeEmptyLines_Click" ToolTip="去除空行">\n</Button>
+            <Button x:Name="removeTags" Grid.Column="1" Click="removeTags_Click" ToolTip="移除标签">移除</Button>
+            <Button x:Name="compressTags" Grid.Column="2" Click="compressTags_Click" ToolTip="压缩标签">压缩</Button>
+            <Button x:Name="decompressTags" Grid.Column="3" Click="decompressTags_Click" ToolTip="解压标签">解压</Button>
+            <Button x:Name="synchronizeTags" Grid.Column="4" Click="synchronizeTags_Click" ToolTip="同步翻译标签">同步</Button>
+            <CheckBox x:Name="setTranslate" Click="setTranslate_Click" Grid.Column="5" VerticalAlignment="Bottom" ToolTip="添加翻译">翻译</CheckBox>
+            <Button IsDefault="True" Grid.Column="6" Click="Button_Click">确定</Button>
+            <Button IsCancel="True" Grid.Column="7" HorizontalContentAlignment="Center">取消</Button>
             
         </Grid>
-        <TextBox x:Name="originalText" Grid.Row="1" Grid.Column="0" AcceptsReturn="True" >
-            <TextBox.Resources>
-                <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
-                    <VisualBrush.Visual>
-                        <TextBlock FontStyle="Italic" Text="在此添加歌词"/>
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </TextBox.Resources>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <Trigger Property="Text" Value="{x:Null}">
-                            <Setter Property="Background" Value="{StaticResource HintText}"/>
-                        </Trigger>
-                        <Trigger Property="Text" Value="">
-                            <Setter Property="Background" Value="{StaticResource HintText}"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <TextBox x:Name="TranslatedText" IsEnabled="False" Grid.Row="1" Grid.Column="1" AcceptsReturn="True">
-            <TextBox.Resources>
-                <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
-                    <VisualBrush.Visual>
-                        <TextBlock FontStyle="Italic" Text="在此添加翻译"/>
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </TextBox.Resources>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <Trigger Property="Text" Value="{x:Null}">
-                            <Setter Property="Background" Value="{StaticResource HintText}"/>
-                        </Trigger>
-                        <Trigger Property="Text" Value="">
-                            <Setter Property="Background" Value="{StaticResource HintText}"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
+        <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" ScrollBar.Scroll="ScrollViewer_Scroll" >
+            <TextBox x:Name="originalText" AcceptsReturn="True" MouseWheel="scroll_MouseWheel">
+                <TextBox.Resources>
+                    <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
+                        <VisualBrush.Visual>
+                            <TextBlock FontStyle="Italic" Text="在此添加歌词"/>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </TextBox.Resources>
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter Property="Background" Value="{StaticResource HintText}"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Background" Value="{StaticResource HintText}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+        </ScrollViewer>
+        <ScrollViewer x:Name="scroll1" Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" ScrollBar.Scroll="ScrollViewer1_Scroll" >
+            <TextBox x:Name="TranslatedText" IsEnabled="False"   AcceptsReturn="True" MouseWheel="scroll1_MouseWheel">
+                <TextBox.Resources>
+                    <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
+                        <VisualBrush.Visual>
+                            <TextBlock FontStyle="Italic" Text="在此添加翻译"/>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </TextBox.Resources>
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter Property="Background" Value="{StaticResource HintText}"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Background" Value="{StaticResource HintText}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+        </ScrollViewer>
     </Grid>
 </Window>
