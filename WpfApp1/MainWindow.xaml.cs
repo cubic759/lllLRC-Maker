@@ -252,24 +252,24 @@ namespace WpfApp1
             }
         }
 
-        int i = 0;
+        int clickCounter = 0;
         bool isClickOnTitle = false;
         /// <summary>
         /// 标题栏双击事件
         /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            i += 1;
+            clickCounter += 1;
             System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
-            timer.Tick += (s, e1) => { timer.IsEnabled = false; i = 0; };
+            timer.Tick += (s, e1) => { timer.IsEnabled = false; clickCounter = 0; };
             timer.IsEnabled = true;
             isClickOnTitle = true;
 
-            if (i % 2 == 0)
+            if (clickCounter % 2 == 0)
             {
                 timer.IsEnabled = false;
-                i = 0;
+                clickCounter = 0;
                 this.WindowState = this.WindowState == WindowState.Maximized ?
                               WindowState.Normal : WindowState.Maximized;
             }
@@ -751,9 +751,9 @@ namespace WpfApp1
                 {
                     string[] stringArray = originalLyric.Replace("\r\n", "\n").Split('\n');
                     List<LyricData> items = new List<LyricData>();
+                    Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
                     for (int i = 0; i < stringArray.Length; i++)
                     {
-                        Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
                         if (regex.IsMatch(stringArray[i]))
                         {
                             string[] tagContainer = new string[regex.Matches(stringArray[i]).Count];

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -78,26 +79,32 @@ namespace WpfApp1
             }
             TranslatedText.Text = result;
         }
+
         public String getOriginalLyric()
         {
             return originalLyric;
         }
+
         public String getTranslatedLyric()
         {
             return translatedLyric;
         }
+
         public void SetOriginalLyric(String text)
         {
             originalText.Text = text;
         }
+
         public void setTranslatedLyric(String text)
         {
             translatedLyric = text;
         }
+
         public bool hasTranslatedLyric()
         {
             return shouldHaveTranslate;
         }
+
         private void setTranslate_Click(object sender, RoutedEventArgs e)
         {
             if (setTranslate.IsChecked == true)
@@ -116,9 +123,9 @@ namespace WpfApp1
         {
             string[] stringArray = originalText.Text.Replace("\r\n", "\n").Split('\n');
             string result = "";
+            Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
             for (int i = 0; i < stringArray.Length; i++)
             {
-                Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
                 result += regex.Split(stringArray[i])[regex.Matches(stringArray[i]).Count].Trim();
                 if (i != stringArray.Length - 1)
                 {
@@ -131,7 +138,6 @@ namespace WpfApp1
             result = "";
             for (int i = 0; i < stringArray.Length; i++)
             {
-                Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
                 result += regex.Split(stringArray[i])[regex.Matches(stringArray[i]).Count].Trim();
                 if (i != stringArray.Length - 1)
                 {
@@ -144,22 +150,103 @@ namespace WpfApp1
         private void compressTags_Click(object sender, RoutedEventArgs e)
         {
             string[] stringArray = originalText.Text.Replace("\r\n", "\n").Split('\n');
-            string result = "";
+            Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
+            bool allHaveTags = true;
             for (int i = 0; i < stringArray.Length; i++)
             {
-                Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
-                result += regex.Split(stringArray[i])[regex.Matches(stringArray[i]).Count].Trim();
-                if (i != stringArray.Length - 1)
+                if (!regex.IsMatch(stringArray[i]))
                 {
-                    result += "\r\n";
+                    allHaveTags = false;
+                    break;
                 }
             }
-            originalText.Text = result;
+            if (allHaveTags)
+            {
+                int counter = 0;
+                string result = "";
+                Hashtable hashtable = new Hashtable();
+                for (int i = 0; i < stringArray.Length; i++)
+                {
+                    int ceiling = regex.Matches(stringArray[i]).Count;
+                    string lyric = regex.Split(stringArray[i])[ceiling].Trim();
+                    if (!hashtable.Contains(lyric))
+                    {
+                        hashtable.Add(lyric, counter);
+                        counter++;
+                    }
+                    else
+                    {
+                        int htIndex = (int)hashtable[lyric];
+                        stringArray[htIndex] = SortingTags(regex.Matches(stringArray[htIndex]), regex.Matches(stringArray[i])) + " " + lyric;
+                    }
+                }
+                for (int i = 0; i < counter; i++)
+                {
+                    result += stringArray[i];
+                    if (i != stringArray.Length - 1)
+                    {
+                        result += "\r\n";
+                    }
+                }
+                originalText.Text = result;
+            }
+            else
+            {
+                MessageBox.Show("标签还没有打完，应该打完再压缩标签");
+            }
+        }
+
+        private string SortingTags(MatchCollection collection1, MatchCollection collection2)
+        {
+            int ceiling1 = collection1.Count;
+            int ceiling2 = collection2.Count;
+            double[] b = new double[ceiling1 + ceiling2];
+            string result = "";
+            for (int i = 0; i < ceiling1; i++)
+            {
+                b[i] = TimeSpan.ParseExact(collection1[i].ToString().Substring(1).Split(']')[0], @"mm\:ss\.ff", null).TotalMilliseconds;
+            }
+            for (int i = 0; i < ceiling2; i++)
+            {
+                b[i + ceiling1] = TimeSpan.ParseExact(collection2[i].ToString().Substring(1).Split(']')[0], @"mm\:ss\.ff", null).TotalMilliseconds;
+            }
+            b = MergeSort.Sort(b);
+            for (int i = 0; i < b.Length; i++)
+            {
+                result += "[" + TimeSpan.FromMilliseconds(b[i]).ToString(@"mm\:ss\.ff") + "]";
+            }
+            return result;
         }
 
         private void decompressTags_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void synchronizeTags_Click(object sender, RoutedEventArgs e)
+        {
+            string[] stringArray = originalText.Text.Replace("\r\n", "\n").Split('\n');
+            string[] stringArray1 = TranslatedText.Text.Replace("\r\n", "\n").Split('\n');
+            string result = "";
+            Regex regex = new Regex(@"\[\d{2}:\d{2}.\d{1,3}\]");
+            for (int i = 0; i < stringArray1.Length; i++)
+            {
+                int ceiling = regex.Matches(stringArray[i]).Count;
+                for (int j = 0; j < ceiling; j++)
+                {
+                    result += regex.Matches(stringArray[i])[j];
+                    if (j == ceiling - 1)
+                    {
+                        result += " ";
+                    }
+                }
+                result += stringArray1[i].Trim();
+                if (i != stringArray1.Length - 1)
+                {
+                    result += "\r\n";
+                }
+            }
+            TranslatedText.Text = result;
         }
 
         private void ScrollViewer_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
@@ -177,7 +264,8 @@ namespace WpfApp1
             if (e.Delta > 0)// /|
             {
                 scroll1.ScrollToVerticalOffset(scroll.VerticalOffset - 50);
-            }else if (e.Delta < 0)// \|
+            }
+            else if (e.Delta < 0)// \|
             {
                 scroll1.ScrollToVerticalOffset(scroll.VerticalOffset + 50);
             }
@@ -195,9 +283,5 @@ namespace WpfApp1
             }
         }
 
-        private void synchronizeTags_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

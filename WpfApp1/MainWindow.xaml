@@ -106,6 +106,8 @@
         </DrawingImage>
         <RoutedUICommand x:Key="Play" Text="Play" />
         <RoutedUICommand x:Key="InsertTag" Text="Insert a tag" />
+        <RoutedUICommand x:Key="GoToFront" Text="Go to the front" />
+        <RoutedUICommand x:Key="GoToBack" Text="Go to the back" />
         <SolidColorBrush x:Key="MenuItem.Highlight.Background" Color="#3D26A0DA"/>
         <SolidColorBrush x:Key="MenuItem.Highlight.Border" Color="#FF26A0DA"/>
         <SolidColorBrush x:Key="Menu.Disabled.Foreground" Color="#FF707070"/>
@@ -404,13 +406,16 @@
     <Window.InputBindings>
         <KeyBinding Gesture="Enter" Command="{StaticResource InsertTag}"/>
         <KeyBinding Gesture="Space" Command="{StaticResource Play}"/>
-        <!--回退键去除当前标签，delete键删除行，ctrl+z撤销，+y重做，+←到最左，←回退5s
-        -->
+        <KeyBinding Gesture="Ctrl+Left" Command="{StaticResource GoToFront}"/>
+        <KeyBinding Gesture="Ctrl+Right" Command="{StaticResource GoToBack}"/>
+        <!--回退键去除当前标签，delete键删除行，ctrl+z撤销，+y重做，←回退5s-->
     </Window.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed" CanExecute="NewCommand_CanExecute" />
         <CommandBinding Command="{StaticResource InsertTag}" Executed="InsertTag_Executed" CanExecute="InsertTag_CanExecute" />
         <CommandBinding Command="{StaticResource Play}" Executed="Play_Executed" CanExecute="Play_CanExecute" />
+        <CommandBinding Command="{StaticResource GoToFront}" Executed="GoToTheFront"/>
+        <CommandBinding Command="{StaticResource GoToBack}" Executed="GoToTheBack"/>
     </Window.CommandBindings>
     <Grid Background="Azure" Name="grid">
         <Grid.RowDefinitions>
