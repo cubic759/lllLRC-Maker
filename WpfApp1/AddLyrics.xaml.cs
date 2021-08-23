@@ -24,21 +24,7 @@ namespace WpfApp1
             translatedLyric = TranslatedText.Text;
             if (originalLyric != "")
             {
-                if (shouldHaveTranslate)
-                {
-                    if (translatedLyric != "")
-                    {
-                        DialogResult = true;
-                    }
-                    else
-                    {
-                        DialogResult = false;
-                    }
-                }
-                else
-                {
-                    DialogResult = true;
-                }
+                DialogResult = true;
             }
             else
             {
@@ -97,7 +83,14 @@ namespace WpfApp1
 
         public void setTranslatedLyric(String text)
         {
-            translatedLyric = text;
+            TranslatedText.Text = text;
+        }
+
+        public void setHasTranslation(bool setting)
+        {
+            setTranslate.IsChecked = setting;
+            shouldHaveTranslate = setting;
+            TranslatedText.IsEnabled = setting;
         }
 
         public bool hasTranslatedLyric()
@@ -220,6 +213,7 @@ namespace WpfApp1
 
         private void decompressTags_Click(object sender, RoutedEventArgs e)
         {
+            string[] stringArray = originalText.Text.Replace("\r\n", "\n").Split('\n');
 
         }
 

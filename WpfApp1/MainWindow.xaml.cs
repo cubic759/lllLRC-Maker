@@ -117,7 +117,6 @@ namespace WpfApp1
         #endregion 命令
 
         #region 主要方法
-        bool noSongCanceled = false;
         public void initialization(string fileName)
         {
             _ = Dispatcher.BeginInvoke((Action)delegate
@@ -147,18 +146,6 @@ namespace WpfApp1
                     volBefore = 100;
                 }
                 total.Content = duration.ToString(@"mm\:ss");
-                if (!noSongCanceled)
-                {
-                    for (int i = 0; i < preview.Items.Count; i++)
-                    {
-                        if (((TextBlock)preview.Items.GetItemAt(i)).Text == "无音乐")
-                        {
-                            preview.Items.RemoveAt(i);
-                            noSongCanceled = true;
-                            break;
-                        }
-                    }
-                }
             });
             isInitiated = true;
             Task.Run(() => StartUpdateProgress());// 界面更新线程
@@ -702,7 +689,7 @@ namespace WpfApp1
 
         string originalLyric;
         string translatedLyric;
-        bool noLyricCanceled = false;
+        bool translationSet = false;
         private void addLyric_Click(object sender, RoutedEventArgs e)//TODO: 对压缩后的标签歌词的支持
         {
             AddLyrics addLyrics = new AddLyrics();
@@ -730,7 +717,10 @@ namespace WpfApp1
                 }
                 addLyrics.SetOriginalLyric(lyric);
             }
-            if (addLyrics.hasTranslatedLyric() && translatedLyric != null && translatedLyric != "")
+
+            addLyrics.setHasTranslation(translationSet);
+
+            if (translatedLyric != null && translatedLyric != "")
             {
                 addLyrics.setTranslatedLyric(translatedLyric);
             }
@@ -738,15 +728,9 @@ namespace WpfApp1
             addLyrics.ShowDialog();
             if (addLyrics.DialogResult == true)
             {
-                if (addLyrics.hasTranslatedLyric())
-                {
-                    originalLyric = addLyrics.getOriginalLyric();
-                    translatedLyric = addLyrics.getTranslatedLyric();
-                }
-                else
-                {
-                    originalLyric = addLyrics.getOriginalLyric();
-                }
+                translationSet = addLyrics.hasTranslatedLyric();
+                originalLyric = addLyrics.getOriginalLyric();
+                translatedLyric = addLyrics.getTranslatedLyric();
                 if (originalLyric != "" && originalLyric != null)//把数据塞进LyricView
                 {
                     string[] stringArray = originalLyric.Replace("\r\n", "\n").Split('\n');
@@ -769,18 +753,8 @@ namespace WpfApp1
                         }
                     }
                     LyricView.ItemsSource = items;
-                    if (!noLyricCanceled)
-                    {
-                        for (int i = 0; i < preview.Items.Count; i++)
-                        {
-                            if (((TextBlock)preview.Items.GetItemAt(i)).Text == "无歌词")
-                            {
-                                preview.Items.RemoveAt(i);
-                                noLyricCanceled = true;
-                                break;
-                            }
-                        }
-                    }
+                    preview.Items.Clear();
+                    preview.ItemsSource = items;
                 }
             }
         }
@@ -927,6 +901,10 @@ namespace WpfApp1
                 (sender as ListBox).ReleaseMouseCapture();
         }
 
+        private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
     public class LyricData
     {
