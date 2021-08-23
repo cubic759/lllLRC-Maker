@@ -220,6 +220,7 @@ namespace WpfApp1
 
         private void decompressTags_Click(object sender, RoutedEventArgs e)
         {
+            string[] stringArray = originalText.Text.Replace("\r\n", "\n").Split('\n');
 
         }
 
