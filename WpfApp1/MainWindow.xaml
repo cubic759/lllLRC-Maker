@@ -464,24 +464,24 @@
                         <BlurEffect  Radius="80" RenderingBias="Quality"></BlurEffect>
                     </Image.Effect>
                 </Image>
-                <ScrollViewer Background="Transparent"  BorderThickness="0" Grid.Column="0" VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Hidden" Height="150">
-                    <ItemsControl x:Name="preview" HorizontalContentAlignment="Center" FontSize="30">
-                        <TextBlock HorizontalAlignment="Center" Name="defaultItem1">无音乐</TextBlock>
-                        <TextBlock HorizontalAlignment="Center" Name="defaultItem2">无歌词</TextBlock>
+                <local:AniScrollViewer x:Name="previewScroll" Background="Transparent"  BorderThickness="0" Grid.Column="0" VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Hidden" Height="150">
+                    <ItemsControl x:Name="preview" HorizontalContentAlignment="Center">
+                        <TextBlock HorizontalAlignment="Center" Name="defaultItem1" FontSize="30">无音乐</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" Name="defaultItem2" FontSize="30">无歌词</TextBlock>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
+                                <Grid Height="30">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Label MouseMove="Label_MouseMove" MouseLeave="Label_MouseLeave" MouseDown="Label_MouseDown" Content="{Binding Tag}" Tag="{Binding Index}" Visibility="Hidden"></Label>
-                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Text="{Binding Content,Mode=OneTime}" Grid.Column="1"></TextBlock>
+                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Text="{Binding Content,Mode=OneTime}" Grid.Column="1" FontSize="20"></TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </ScrollViewer>
+                </local:AniScrollViewer>
                 <ListBox x:Name="LyricView" Grid.Column="1" SelectedIndex="0" Height="430" Width="370" Background="Transparent" BorderThickness="0" Focusable="False" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseDoubleClick="LyricView_MouseDoubleClick" PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="ListBox_PreviewMouseLeftButtonUp" PreviewMouseMove="ListBox_PreviewMouseMove">
                     <ListBox.ItemTemplate>
                         <DataTemplate>

@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 
 namespace WpfApp1
 {
@@ -161,6 +162,10 @@ namespace WpfApp1
                     {
                         position += 10;
                         UpdateProgress();
+                        _ = Dispatcher.BeginInvoke((Action)delegate
+                        {
+                            UpdateLyricView();
+                        });
                         timer.Start(10);
                     }
                 }
@@ -169,6 +174,67 @@ namespace WpfApp1
                     Thread.Sleep(50);
                 }
             }
+        }
+
+        int previewIndex = 0;
+        private void UpdateLyricView()
+        {
+            LyricData showing = (LyricData)preview.Items[previewIndex];
+            int ms = (int)TimeSpan.ParseExact(showing.Tag, @"mm\:ss\.ff", null).TotalMilliseconds;
+            if (ms == (int)TimeSpan.ParseExact((string)timerLabel.Content, @"mm\:ss\.ff", null).TotalMilliseconds)
+            {
+                if (preview.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                {
+                    if (previewIndex != 0)
+                    {
+                        var previousItem = preview.ItemContainerGenerator.ContainerFromIndex(previewIndex - 1);
+                        Grid pd = (Grid)VisualTreeHelper.GetChild(previousItem, 0);
+                        pd.Height = 30;
+                        TextBlock pb = (TextBlock)pd.Children[1];
+                        pb.Foreground = System.Windows.Media.Brushes.Black;
+                        pb.FontSize = 20;
+                    }
+                    var item = preview.ItemContainerGenerator.ContainerFromIndex(previewIndex);
+                    Grid d = (Grid)VisualTreeHelper.GetChild(item, 0);
+                    d.Height = 40;
+                    TextBlock b = (TextBlock)d.Children[1];
+                    b.Foreground = System.Windows.Media.Brushes.White;
+                    b.FontSize = 30;
+                }
+                if (previewIndex > 2)
+                {
+                    previewScroll.ScrollToVerticalOffset(previewScroll.VerticalOffset + 30);
+                }
+                if (previewIndex < preview.Items.Count - 1)
+                {
+                    previewIndex++;
+                }
+            }
+        }
+        /*
+         Point relativePoint = btn.TransformToAncestor(mainContent).Transform(new Point(0, 0));
+            ScrollToPosition(relativePoint.X, relativePoint.Y);
+         */
+        private void ScrollToPosition(double x, double y)
+        {
+            DoubleAnimation vertAnim = new DoubleAnimation();
+            vertAnim.From = previewScroll.VerticalOffset;
+            vertAnim.To = y;
+            vertAnim.DecelerationRatio = .2;
+            vertAnim.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+            DoubleAnimation horzAnim = new DoubleAnimation();
+            horzAnim.From = previewScroll.HorizontalOffset;
+            horzAnim.To = x;
+            horzAnim.DecelerationRatio = .2;
+            horzAnim.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+            Storyboard sb = new Storyboard();
+            sb.Children.Add(vertAnim);
+            sb.Children.Add(horzAnim);
+            Storyboard.SetTarget(vertAnim, previewScroll);
+            Storyboard.SetTargetProperty(vertAnim, new PropertyPath(AniScrollViewer.CurrentVerticalOffsetProperty));
+            Storyboard.SetTarget(horzAnim, previewScroll);
+            Storyboard.SetTargetProperty(horzAnim, new PropertyPath(AniScrollViewer.CurrentHorizontalOffsetProperty));
+            sb.Begin();
         }
 
         private void UpdateProgress()
@@ -233,7 +299,7 @@ namespace WpfApp1
         /// </summary>
         private void TitleBar_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isClickOnTitle)
+            if (isClickOnTitle && Mouse.LeftButton == MouseButtonState.Pressed)
             {
                 DragMove();
             }
@@ -312,8 +378,11 @@ namespace WpfApp1
         {
             if (isInitiated)
             {
+                previewScroll.ScrollToVerticalOffset(0);
+                
                 reader.CurrentTime = TimeSpan.Zero;
                 position = 0;
+                previewIndex = 0;
                 if (player.PlaybackState != PlaybackState.Playing)
                 {
                     line.StartPoint = new Point(0, 0);
@@ -690,7 +759,8 @@ namespace WpfApp1
         string originalLyric;
         string translatedLyric;
         bool translationSet = false;
-        private void addLyric_Click(object sender, RoutedEventArgs e)//TODO: 对压缩后的标签歌词的支持
+        bool isSecondTime = false;
+        private void addLyric_Click(object sender, RoutedEventArgs e)//TODO: 添加对压缩后的标签歌词的支持
         {
             AddLyrics addLyrics = new AddLyrics();
             addLyrics.Owner = this;
@@ -753,7 +823,15 @@ namespace WpfApp1
                         }
                     }
                     LyricView.ItemsSource = items;
-                    preview.Items.Clear();
+                    if (isSecondTime)
+                    {
+                        preview.ItemsSource = null;
+                    }
+                    else
+                    {
+                        preview.Items.Clear();
+                        isSecondTime = true;
+                    }
                     preview.ItemsSource = items;
                 }
             }
