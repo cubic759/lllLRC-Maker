@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 
 namespace WpfApp1
 {
@@ -17,6 +18,36 @@ namespace WpfApp1
         {
             InitializeComponent();
         }
+
+        #region 标题栏事件
+        /// <summary>
+        /// 窗口移动事件
+        /// </summary>
+        private void TitleBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isClickOnTitle && Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private bool isClickOnTitle = false;
+        /// <summary>
+        /// 标题栏双击事件
+        /// </summary>
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isClickOnTitle = true;
+        }
+
+        /// <summary>
+        /// 标题栏松开事件
+        /// </summary>
+        private void DockPanel_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            isClickOnTitle = false;
+        }
+        #endregion 标题栏事件
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

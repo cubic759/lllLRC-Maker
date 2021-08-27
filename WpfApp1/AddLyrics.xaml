@@ -4,18 +4,56 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
-        mc:Ignorable="d"
-        Title="AddLyrics" Height="296.4" Width="473.2"
+        mc:Ignorable="d" Height="583.2" Width="808.2"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
         ShowInTaskbar="False"
         >
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9"
-            ResizeBorderThickness="3"/>
+        <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9" ResizeBorderThickness="3"/>
     </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <DrawingImage x:Key="deleteEmptyDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M0,192L0,832 1024,832 1024,192 0,192z M960,768L64,768 64,256 960,256 960,768z M192,704L320,576 448,704 512,640 384,512 512,384 448,320 320,448 192,320 128,384 256,512 128,640 192,704z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="decompressDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF2C2C2C" Geometry="F1 M1024,1024z M0,0z M493.184,960L495.296,960 496.256,959.872 496.576,959.872 497.728,959.616 498.688,959.488 499.2,959.488 500.096,959.232A30.72,30.72,0,0,0,501.504,958.848L502.144,958.656A28.928,28.928,0,0,0,502.976,958.4L503.616,958.208 505.088,957.632 505.728,957.376A29.12,29.12,0,0,0,506.496,956.992L507.008,956.736 508.096,956.096A39.68,39.68,0,0,0,509.248,955.456L510.912,954.432A30.912,30.912,0,0,0,512.256,953.408L513.28,952.64 514.112,951.936 516.096,949.888 612.096,853.888A31.36,31.36,0,1,0,567.68,809.6L524.416,852.8 524.416,623.936A31.36,31.36,0,0,0,461.632,623.936L461.632,852.8 418.368,809.536A31.36,31.36,0,1,0,374.016,853.952L470.016,949.952 470.784,950.848A31.232,31.232,0,0,0,486.784,959.424L487.424,959.488 488.128,959.616A33.536,33.536,0,0,0,489.856,959.872L491.52,960 495.36,960 493.184,960z M798.656,83.3920000000001C866.752,83.3920000000001,922.176,138.752,922.176,206.784L922.176,817.088C922.176,885.184,866.752,940.608,798.656,940.608L654.272,940.608A31.36,31.36,0,0,1,654.272,877.888L798.72,877.888A60.8,60.8,0,0,0,859.392,817.088L859.392,206.848A60.8,60.8,0,0,0,798.656,146.048L654.272,146.048A31.36,31.36,0,0,1,654.272,83.328L798.656,83.328z M331.904,83.3920000000001A31.36,31.36,0,0,1,331.904,146.112L187.456,146.112A60.8,60.8,0,0,0,126.784,206.912L126.784,817.088A60.8,60.8,0,0,0,187.52,877.888L331.904,877.888A31.36,31.36,0,1,1,331.904,940.608L187.456,940.608A123.648,123.648,0,0,1,64,817.088L64,206.784C64,138.752,119.424,83.264,187.52,83.264L331.904,83.392z M689.984,480.576A31.36,31.36,0,1,1,689.984,543.36L296.192,543.36A31.36,31.36,0,0,1,296.192,480.576L689.984,480.576z M493.056,431.296A31.36,31.36,0,0,0,524.544,399.936L524.544,171.072 567.744,214.336A31.36,31.36,0,1,0,612.096,169.92L516.224,73.92A31.808,31.808,0,0,0,514.176,72L513.6,71.424 513.024,70.976 511.808,70.016 510.592,69.184 509.44,68.416A29.44,29.44,0,0,0,508.416,67.776L507.968,67.584 507.52,67.3920000000001 507.072,67.1360000000001A30.976,30.976,0,0,0,505.152,66.2400000000001L503.68,65.6000000000001 503.04,65.4080000000001A30.912,30.912,0,0,0,502.144,65.1520000000001L501.696,65.0240000000001A31.232,31.232,0,0,0,500.736,64.7680000000001L500.16,64.6400000000001 499.264,64.4480000000001 498.624,64.3840000000001 497.728,64.1280000000001 497.088,64.1280000000001 496.128,64.0000000000001 495.488,64 491.392,64 489.792,64.064A31.36,31.36,0,0,0,470.784,73.024L470.016,73.92 373.952,169.984A31.488,31.488,0,0,0,418.368,214.336L461.632,171.136 461.632,400C461.632,417.28,475.712,431.296,493.056,431.296z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="compressDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF2C2C2C" Geometry="F1 M1024,1024z M0,0z M311.7,475.7C294.2,475.7 279.9,489.8 279.7,507.4 279.5,525.1 293.7,539.5 311.4,539.7L743.7,544 744,544C761.5,544 775.8,529.9 776,512.3 776.2,494.6 762,480.2 744.3,480L312,475.7 311.7,475.7z" />
+                    <GeometryDrawing Brush="#FF2C2C2C" Geometry="F1 M1024,1024z M0,0z M320.2,863.6L209.2,863 209,863C182.5,863,161,841.5,161,815L161,209C161,182.6,182.5,161,208.9,161L319.9,161.6 320.1,161.6C337.7,161.6 352,147.4 352.1,129.8 352.2,112.1 338,97.7 320.3,97.6L209.2,97 209,97C147.2,97,97,147.2,97,209L97,815C97,876.7,147.2,926.9,208.9,927L319.9,927.6 320.1,927.6C337.7,927.6 352,913.4 352.1,895.8 352.2,878.2 337.9,863.7 320.2,863.6z M815,97L704,97.6C686.3,97.7 672.1,112.1 672.2,129.8 672.3,147.4 686.6,161.6 704.2,161.6L704.4,161.6 815.2,161C841.6,161,863.1,182.6,863.1,209L863.1,815C863.1,841.5,841.6,863,815.1,863L704.1,863.6C686.4,863.7 672.2,878.1 672.3,895.8 672.4,913.4 686.7,927.6 704.3,927.6L704.5,927.6 815.3,927C877,926.9,927.2,876.7,927.2,815L927.2,209C927,147.2,876.8,97,815,97z M489.4,406.4C501.9,418.9,522.2,418.9,534.7,406.4L650.7,290.4C663.2,277.9 663.2,257.6 650.7,245.1 644.5,238.9 636.3,235.7 628.1,235.7 619.9,235.7 611.7,238.8 605.5,245.1L544.3,306.3 544.3,96C544.3,78.3 530,64 512.3,64 494.6,64 480.3,78.3 480.3,96L480.3,306.6 418.9,245.2C412.7,239 404.5,235.8 396.3,235.8 388.1,235.8 379.9,238.9 373.7,245.2 361.2,257.7 361.2,278 373.7,290.5L489.4,406.4z M534.6,618.5C532.4,616.3 530.1,614.6 527.6,613.2 522.8,610.5 517.4,609.1 512,609.1 503.8,609.1 495.6,612.2 489.4,618.5L373.4,734.5C360.9,747 360.9,767.3 373.4,779.8 385.9,792.3 406.2,792.3 418.7,779.8L479.9,718.6 479.9,929C479.9,946.7 494.2,961 511.9,961 529.6,961 543.9,946.7 543.9,929L543.9,718.3 605.3,779.7C617.8,792.2 638.1,792.2 650.6,779.7 663.1,767.2 663.1,746.9 650.6,734.4L534.6,618.5z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="removeTagsDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M820,100.96A104,104,0,0,1,924,204.8L924,414.4A149.6,149.6,0,0,1,880,520.32L802.24,596A34.56,34.56,0,0,1,748.96,551.84L752.8,548 830.56,472.32A81.28,81.28,0,0,0,854.24,416L854.24,204.96A34.72,34.72,0,0,0,819.52,170.24L610.24,170.24A80,80,0,0,0,553.12,193.92L178.08,569.6A23.36,23.36,0,0,0,178.08,601.6L422.72,846.88A23.36,23.36,0,0,0,454.72,846.88L505.6,796A34.56,34.56,0,0,1,554.56,844.96L504.32,896A92.64,92.64,0,0,1,373.6,896L129.12,651.36A92.32,92.32,0,0,1,129.12,520.8L504.48,145.12A151.04,151.04,0,0,1,610.72,101.12z M644,265.12A115.36,115.36,0,1,1,528,380.48A115.84,115.84,0,0,1,644,265.12z M643.04,321.28A57.28,57.28,0,0,0,584.8,377.6L584.8,379.36A57.44,57.44,0,0,0,641.44,437.6L643.04,437.6A57.6,57.6,0,0,0,701.12,380.64L701.12,379.36A57.44,57.44,0,0,0,644.32,321.28L643.04,321.28z" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M534.4,673.6L777.44,673.6A26.88,26.88,0,0,1,807.84,696.48A29.6,29.6,0,0,1,807.84,704A26.88,26.88,0,0,1,784.96,734.4A29.6,29.6,0,0,1,777.44,734.4L534.4,734.4A26.88,26.88,0,0,1,504,711.52A29.6,29.6,0,0,1,504,704A26.88,26.88,0,0,1,526.88,673.6A29.6,29.6,0,0,1,534.4,673.6z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="synchronizeDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+                    <GeometryDrawing Brush="#FF000000" Geometry="F1 M1024,1024z M0,0z M981.312,704C1004.8,704 1024,713.728 1024,737.152 1024,760.64 1004.8,768 981.312,768L129.792,768 321.152,956.032C337.792,972.736,345.92,994.816,329.28,1011.52A42.752,42.752,0,0,1,268.992,1011.52C137.216,877.952 55.36,796.736 23.296,768 3.2,749.888 0,736.64 0,731.52 0,706.048 24.896,704 42.688,704L981.312,704z M1024,295.808L1024,298.688C1024,300.608 1023.36,311.488 1020.736,314.688 1014.528,322.112 995.968,320.768 978.176,320.768L39.552,320.768C16,320.768 0,319.296 0,295.808 0,272.32 19.2,256 42.688,256L893.12,256 709.376,72.768C692.736,56.192,677.76,28.544,694.656,12.416A43.264,43.264,0,0,1,755.008,12.416L1011.52,268.224C1019.584,276.224,1024.064,284.416,1024,295.808z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition />
         </Grid.RowDefinitions>
@@ -23,7 +61,8 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Grid Grid.ColumnSpan="2">
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Height="30" MouseUp="DockPanel_MouseUp" MouseDown="TitleBar_MouseDown" MouseMove="TitleBar_MouseMove"></TextBlock>
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -34,18 +73,28 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button x:Name="removeEmptyLines" Grid.Column="0" Click="removeEmptyLines_Click" ToolTip="去除空行">\n</Button>
-            <Button x:Name="removeTags" Grid.Column="1" Click="removeTags_Click" ToolTip="移除标签">移除</Button>
-            <Button x:Name="compressTags" Grid.Column="2" Click="compressTags_Click" ToolTip="压缩标签">压缩</Button>
-            <Button x:Name="decompressTags" Grid.Column="3" Click="decompressTags_Click" ToolTip="解压标签">解压</Button>
-            <Button x:Name="synchronizeTags" Grid.Column="4" Click="synchronizeTags_Click" ToolTip="同步翻译标签">同步</Button>
-            <CheckBox x:Name="setTranslate" Click="setTranslate_Click" Grid.Column="5" VerticalAlignment="Bottom" ToolTip="添加翻译">翻译</CheckBox>
-            <Button IsDefault="True" Grid.Column="6" Click="Button_Click">确定</Button>
-            <Button IsCancel="True" Grid.Column="7" HorizontalContentAlignment="Center">取消</Button>
+            <Button x:Name="removeEmptyLines" Grid.Column="0" Click="removeEmptyLines_Click" Width="30" Background="White" ToolTip="去除空行" Style="{DynamicResource ButtonStyle1}">
+                <Image x:Name="removeEmptyLinesImage" Source="{StaticResource deleteEmptyDrawingImage}" Height="20" ></Image>
+            </Button>
+            <Button x:Name="removeTags" Grid.Column="1" Click="removeTags_Click" ToolTip="移除标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+                <Image x:Name="removeTagsImage" Source="{StaticResource removeTagsDrawingImage}" Height="20" ></Image>
+            </Button>
+            <Button x:Name="compressTags" Grid.Column="2" Click="compressTags_Click" ToolTip="压缩标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+                <Image x:Name="compressTagsImage" Source="{StaticResource compressDrawingImage}" Height="20" ></Image>
+            </Button>
+            <Button x:Name="decompressTags" Grid.Column="3" Click="decompressTags_Click" ToolTip="解压标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+                <Image x:Name="decompressTagsImage" Source="{StaticResource decompressDrawingImage}" Height="20" ></Image>
+            </Button>
+            <Button x:Name="synchronizeTags" Grid.Column="4" Click="synchronizeTags_Click" ToolTip="同步翻译标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+                <Image x:Name="synchronizeTagsImage" Source="{StaticResource synchronizeDrawingImage}" Height="20" ></Image>
+            </Button>
+            <CheckBox x:Name="setTranslate" Click="setTranslate_Click" Grid.Column="5" VerticalAlignment="Center" ToolTip="添加翻译">翻译</CheckBox>
+            <Button IsDefault="True" Background="White" Grid.Column="6" VerticalAlignment="Top" Width="80" Height="25" Click="Button_Click" Style="{DynamicResource ButtonStyle1}">确定</Button>
+            <Button IsCancel="True" Grid.Column="7" Background="White" VerticalAlignment="Top" HorizontalContentAlignment="Center" Width="80" Height="25" Style="{DynamicResource ButtonStyle1}">取消</Button>
             
         </Grid>
-        <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" ScrollBar.Scroll="ScrollViewer_Scroll" >
-            <TextBox x:Name="originalText" AcceptsReturn="True" MouseWheel="scroll_MouseWheel">
+        <ScrollViewer x:Name="scroll" Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" ScrollBar.Scroll="ScrollViewer_Scroll" >
+            <TextBox x:Name="originalText" AcceptsReturn="True" MouseWheel="scroll_MouseWheel" BorderThickness="1">
                 <TextBox.Resources>
                     <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
                         <VisualBrush.Visual>
@@ -67,8 +116,8 @@
                 </TextBox.Style>
             </TextBox>
         </ScrollViewer>
-        <ScrollViewer x:Name="scroll1" Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" ScrollBar.Scroll="ScrollViewer1_Scroll" >
-            <TextBox x:Name="TranslatedText" IsEnabled="False"   AcceptsReturn="True" MouseWheel="scroll1_MouseWheel">
+        <ScrollViewer x:Name="scroll1" Grid.Row="2" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" ScrollBar.Scroll="ScrollViewer1_Scroll" >
+            <TextBox x:Name="TranslatedText" IsEnabled="False"   AcceptsReturn="True" MouseWheel="scroll1_MouseWheel" BorderThickness="1">
                 <TextBox.Resources>
                     <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left" AlignmentY="Top">
                         <VisualBrush.Visual>

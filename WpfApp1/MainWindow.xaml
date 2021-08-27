@@ -411,9 +411,9 @@
         <!--回退键去除当前标签，delete键删除行，ctrl+z撤销，+y重做，←回退5s-->
     </Window.InputBindings>
     <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed" CanExecute="NewCommand_CanExecute" />
-        <CommandBinding Command="{StaticResource InsertTag}" Executed="InsertTag_Executed" CanExecute="InsertTag_CanExecute" />
-        <CommandBinding Command="{StaticResource Play}" Executed="Play_Executed" CanExecute="Play_CanExecute" />
+        <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed"/>
+        <CommandBinding Command="{StaticResource InsertTag}" Executed="InsertTag_Executed"/>
+        <CommandBinding Command="{StaticResource Play}" Executed="Play_Executed"/>
         <CommandBinding Command="{StaticResource GoToFront}" Executed="GoToTheFront"/>
         <CommandBinding Command="{StaticResource GoToBack}" Executed="GoToTheBack"/>
     </Window.CommandBindings>
@@ -430,15 +430,15 @@
                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" FontFamily="微软雅黑"  
                    Foreground="White"/>
             <StackPanel x:Name="ClassCodeChooser" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                <Button HorizontalAlignment="Right" x:Name="btn_min"   BorderThickness="0"
+                <Button HorizontalAlignment="Right" x:Name="btn_min" Focusable="False"  BorderThickness="0"
                                 Width="60" Height="30" Click="btn_min_Click" Grid.Column="0" Background="Transparent">
                     <Image Source="{StaticResource minimizeDrawingImage}" Width="15"></Image>
                 </Button>
-                <Button HorizontalAlignment="Right" x:Name="btn_max"  BorderThickness="0"
+                <Button HorizontalAlignment="Right" x:Name="btn_max" Focusable="False"  BorderThickness="0"
                                 Width="60" Height="30" Click="btn_max_Click" Background="Transparent">
                     <Image x:Name="maximizeImage" Source="{StaticResource maximizeDrawingImage}" Height="11" ></Image>
                 </Button>
-                <Button HorizontalAlignment="Right" x:Name="btn_close"  BorderThickness="0"
+                <Button HorizontalAlignment="Right" x:Name="btn_close" Focusable="False"  BorderThickness="0"
                                 Width="60" Height="30" Click="btn_close_Click" Background="Transparent">
                     <Image Source="{StaticResource closeDrawingImage}" Height="18"></Image>
                 </Button>
@@ -465,19 +465,19 @@
                         <BlurEffect  Radius="80" RenderingBias="Quality"></BlurEffect>
                     </Image.Effect>
                 </Image>
-                <local:AniScrollViewer x:Name="previewScroll" Background="Transparent"  BorderThickness="0" Grid.Column="0" VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Hidden" Height="150">
+                <local:AniScrollViewer x:Name="previewScroll" Background="Transparent"  BorderThickness="0" Grid.Column="0" VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Disabled" Height="150">
                     <ItemsControl x:Name="preview" HorizontalContentAlignment="Center">
                         <TextBlock HorizontalAlignment="Center" Name="defaultItem1" FontSize="30">无音乐</TextBlock>
                         <TextBlock HorizontalAlignment="Center" Name="defaultItem2" FontSize="30">无歌词</TextBlock>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Height="30">
+                                <Grid Height="40">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Label MouseMove="Label_MouseMove" MouseLeave="Label_MouseLeave" MouseDown="Label_MouseDown" Content="{Binding Tag}" Tag="{Binding Index}" Visibility="Hidden"></Label>
-                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Text="{Binding Content,Mode=OneTime}" Grid.Column="1" FontSize="20"></TextBlock>
+                                    <TextBlock VerticalAlignment="Center" TextWrapping="WrapWithOverflow"  HorizontalAlignment="Center" Text="{Binding Content,Mode=OneTime}" Grid.Column="1" FontSize="20"></TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

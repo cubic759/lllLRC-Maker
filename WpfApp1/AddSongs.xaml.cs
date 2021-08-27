@@ -53,7 +53,7 @@ namespace WpfApp1
             }
             else
             {
-                if (url != "")
+                if (link.Text != "")
                 {
                     MessageBox.Show("两个输入都有数据。请清除任意一个文件");
                 }

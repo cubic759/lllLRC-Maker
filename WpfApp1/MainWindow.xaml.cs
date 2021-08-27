@@ -45,26 +45,10 @@ namespace WpfApp1
         }
 
         #region 命令
-        private void NewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)//执行条件
-        {
-            e.CanExecute = true;
-        }
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)//执行之后做的事
         {
             MessageBox.Show("The New command was invoked");
-        }
-
-        private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (IsActive)
-            {
-                e.CanExecute = true;
-            }
-            else
-            {
-                e.CanExecute = false;
-            }
         }
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -83,18 +67,6 @@ namespace WpfApp1
         }
 
         private int itemAfter = 0;//歌词已选择位置
-        private void InsertTag_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (IsActive)
-            {
-                e.CanExecute = true;
-            }
-            else
-            {
-                e.CanExecute = false;
-            }
-        }
-
         private void InsertTag_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             itemAfter = LyricView.SelectedIndex;
@@ -113,7 +85,8 @@ namespace WpfApp1
                 {
                     LyricView.ScrollIntoView(LyricView.Items[itemAfter + 1]);
                 }
-
+                PreviewEmphasizedClear();
+                jumpToCurrentPreviewIndex();
             }
         }
         #endregion 命令
@@ -180,37 +153,40 @@ namespace WpfApp1
         private int previewIndex = 0;
         private void UpdateLyricView()
         {
-            if(originalLyric!=""&& originalLyric != null)
+            if (originalLyric != "" && originalLyric != null)
             {
-                LyricData showing = (LyricData)preview.Items[previewIndex];
-                if (showing.Tag != "" && showing.Tag != null)
+                if (previewIndex < preview.Items.Count)
                 {
-                    int ms = (int)TimeSpan.ParseExact(showing.Tag, @"mm\:ss\.ff", null).TotalMilliseconds;
-                    if (ms == (int)TimeSpan.ParseExact((string)timerLabel.Content, @"mm\:ss\.ff", null).TotalMilliseconds)
+                    LyricData showing = (LyricData)preview.Items[previewIndex];
+                    if (showing.Tag != "" && showing.Tag != null)
                     {
-                        if (preview.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                        int ms = (int)TimeSpan.ParseExact(showing.Tag, @"mm\:ss\.ff", null).TotalMilliseconds;
+                        if (ms == (int)TimeSpan.ParseExact((string)timerLabel.Content, @"mm\:ss\.ff", null).TotalMilliseconds)
                         {
-                            if (previewIndex != 0)
+                            if (preview.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
                             {
-                                PreviewEmphasizedClear();
+                                if (previewIndex != 0)
+                                {
+                                    PreviewEmphasizedClear();
+                                }
+                                ContentPresenter item = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex);
+                                Grid d = (Grid)VisualTreeHelper.GetChild(item, 0);
+                                d.Height = 70;
+                                TextBlock b = (TextBlock)d.Children[1];
+                                b.Foreground = System.Windows.Media.Brushes.White;
+                                b.FontSize = 30;
+                                if (previewIndex > 1)
+                                {
+                                    ContentPresenter startItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex - 1);
+                                    Point relativePoint = startItem.TransformToAncestor(preview).Transform(new Point(0, 0));
+                                    relativePoint.Offset(5.0, 5.0);
+                                    ScrollToPosition(relativePoint.X, relativePoint.Y);
+                                }
                             }
-                            ContentPresenter item = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex);
-                            Grid d = (Grid)VisualTreeHelper.GetChild(item, 0);
-                            d.Height = 40;
-                            TextBlock b = (TextBlock)d.Children[1];
-                            b.Foreground = System.Windows.Media.Brushes.White;
-                            b.FontSize = 30;
-                            if (previewIndex > 2)
+                            if (previewIndex < preview.Items.Count - 1)
                             {
-                                ContentPresenter startItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex - 2);
-                                Point relativePoint = startItem.TransformToAncestor(preview).Transform(new Point(0, 0));
-                                relativePoint.Offset(5.0, 5.0);
-                                ScrollToPosition(relativePoint.X, relativePoint.Y);
+                                previewIndex++;
                             }
-                        }
-                        if (previewIndex < preview.Items.Count - 1)
-                        {
-                            previewIndex++;
                         }
                     }
                 }
@@ -236,7 +212,14 @@ namespace WpfApp1
                         }
                         else if (dataTime > timerTime)
                         {
-                            result = index - 1;
+                            if (index > 0)
+                            {
+                                result = index - 1;
+                            }
+                            else
+                            {
+                                result = 0;
+                            }
                             break;
                         }
                         else
@@ -255,7 +238,7 @@ namespace WpfApp1
                     previewIndex = result + 1;
                     ContentPresenter previousItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(result);
                     Grid pd = (Grid)VisualTreeHelper.GetChild(previousItem, 0);
-                    pd.Height = 40;
+                    pd.Height = 70;
                     TextBlock pb = (TextBlock)pd.Children[1];
                     pb.Foreground = System.Windows.Media.Brushes.White;
                     pb.FontSize = 30;
@@ -283,9 +266,9 @@ namespace WpfApp1
                 {
                     ContentPresenter previousItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(index);
                     Grid pd = (Grid)VisualTreeHelper.GetChild(previousItem, 0);
-                    if (pd.Height != 30)
+                    if (pd.Height != 50)
                     {
-                        pd.Height = 30;
+                        pd.Height = 50;
                         TextBlock pb = (TextBlock)pd.Children[1];
                         pb.Foreground = System.Windows.Media.Brushes.Black;
                         pb.FontSize = 20;
@@ -317,7 +300,7 @@ namespace WpfApp1
 
         private void UpdateProgress()
         {
-            if (isInitiated&&!sliderLock)
+            if (isInitiated && !sliderLock)
             {
                 TimeSpan currentTime = reader.CurrentTime; // 当前时间
                 TimeSpan timeTag = TimeSpan.FromMilliseconds(position);

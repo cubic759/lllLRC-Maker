@@ -9,24 +9,33 @@
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
         >
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9" ResizeBorderThickness="0"/>
+    </WindowChrome.WindowChrome>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="80"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal" Name="fileInfo" Grid.Row="0" Grid.ColumnSpan="2" Visibility="Hidden" HorizontalAlignment="Center">
-            <Label Name="FileName" Width="auto" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
-            <Button x:Name="remove" Foreground="Red" BorderThickness="0" Content="移除" Width="50" Height="30" Click="remove_Click"></Button>
+            <Label Name="FileName" Width="auto" VerticalAlignment="Center" HorizontalAlignment="Right"></Label>
+            <Button x:Name="remove" Foreground="Red" Background="white" BorderThickness="0" Content="移除" Style="{DynamicResource ButtonStyle1}" Width="60" Height="25" Click="remove_Click"></Button>
         </StackPanel>
-        <Button Name="selectFileButton" Grid.Row="0" Grid.ColumnSpan="2" Content="添加本地音乐文件" Height="50" Width="200" AllowDrop="True" Click="Button_Click" Visibility="Visible"></Button>
-        <Label Margin="100,0,0,0" Grid.Row="1" Height="30">或从网易云链接添加：</Label>
-        <TextBox Name="link" Width="150" Grid.Row="1" Grid.Column="1" Height="30"></TextBox>
-        <Button IsCancel="True" Grid.Row="2" Grid.Column="0" Content="取消" Height="30" Width="50"></Button>
-        <Button IsDefault="True" Name="selectOnlineFileButton" Grid.Column="1" Grid.Row="2" Content="确定" Height="30" Width="50" Margin="10,0,0,0"  Click="linkButton"/>
+        <Button HorizontalAlignment="Center" Name="selectFileButton" Grid.Row="0" Grid.ColumnSpan="2" Background="White" Content="添加本地音乐文件" Height="50" Width="200" AllowDrop="True" Click="Button_Click" Visibility="Visible"></Button>
+        <Grid Width="289" HorizontalAlignment="Center" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Label VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Height="30" VerticalAlignment="Center">或从网易云链接添加：</Label>
+            <TextBox Name="link" Width="159" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Height="30" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+            <Button HorizontalAlignment="Left" IsCancel="True" Grid.Row="1" Grid.Column="0" Content="取消" Background="White" Height="25" Width="60" Style="{DynamicResource ButtonStyle1}"></Button>
+            <Button HorizontalAlignment="Right" IsDefault="True" Name="selectOnlineFileButton" Style="{DynamicResource ButtonStyle1}" Grid.Column="1" Grid.Row="1" Content="确定" Background="White" Height="25" Width="60" Margin="10,0,0,0"  Click="linkButton"/>
+        </Grid>
     </Grid>
 </Window>
