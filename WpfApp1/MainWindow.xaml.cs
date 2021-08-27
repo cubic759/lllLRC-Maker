@@ -16,8 +16,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace WpfApp1
 {
@@ -57,7 +57,7 @@ namespace WpfApp1
 
         private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (this.IsActive)
+            if (IsActive)
             {
                 e.CanExecute = true;
             }
@@ -82,10 +82,10 @@ namespace WpfApp1
             }
         }
 
-        int itemAfter = 0;//歌词已选择位置
+        private int itemAfter = 0;//歌词已选择位置
         private void InsertTag_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (this.IsActive)
+            if (IsActive)
             {
                 e.CanExecute = true;
             }
@@ -113,6 +113,7 @@ namespace WpfApp1
                 {
                     LyricView.ScrollIntoView(LyricView.Items[itemAfter + 1]);
                 }
+
             }
         }
         #endregion 命令
@@ -135,12 +136,12 @@ namespace WpfApp1
             };
             // dsp end
             player.Init(volumeProvider);
-            UpdateProgress();
-            var duration = reader.TotalTime; // 总时长
+            TimeSpan duration = reader.TotalTime; // 总时长
             cts = new CancellationTokenSource();
             player.PlaybackStopped += player_OnPlaybackStopped;
             _ = Dispatcher.BeginInvoke((Action)delegate
             {
+                UpdateProgress();
                 if (volumeSlider.Tag.ToString() == "Mute")
                 {
                     volumeProvider.Volume = 0;
@@ -161,9 +162,9 @@ namespace WpfApp1
                     if (timer.IsTimeout())
                     {
                         position += 10;
-                        UpdateProgress();
                         _ = Dispatcher.BeginInvoke((Action)delegate
                         {
+                            UpdateProgress();
                             UpdateLyricView();
                         });
                         timer.Start(10);
@@ -176,45 +177,122 @@ namespace WpfApp1
             }
         }
 
-        int previewIndex = 0;
+        private int previewIndex = 0;
         private void UpdateLyricView()
         {
-            LyricData showing = (LyricData)preview.Items[previewIndex];
-            int ms = (int)TimeSpan.ParseExact(showing.Tag, @"mm\:ss\.ff", null).TotalMilliseconds;
-            if (ms == (int)TimeSpan.ParseExact((string)timerLabel.Content, @"mm\:ss\.ff", null).TotalMilliseconds)
+            if(originalLyric!=""&& originalLyric != null)
             {
-                if (preview.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                LyricData showing = (LyricData)preview.Items[previewIndex];
+                if (showing.Tag != "" && showing.Tag != null)
                 {
-                    if (previewIndex != 0)
+                    int ms = (int)TimeSpan.ParseExact(showing.Tag, @"mm\:ss\.ff", null).TotalMilliseconds;
+                    if (ms == (int)TimeSpan.ParseExact((string)timerLabel.Content, @"mm\:ss\.ff", null).TotalMilliseconds)
                     {
-                        var previousItem = preview.ItemContainerGenerator.ContainerFromIndex(previewIndex - 1);
-                        Grid pd = (Grid)VisualTreeHelper.GetChild(previousItem, 0);
+                        if (preview.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                        {
+                            if (previewIndex != 0)
+                            {
+                                PreviewEmphasizedClear();
+                            }
+                            ContentPresenter item = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex);
+                            Grid d = (Grid)VisualTreeHelper.GetChild(item, 0);
+                            d.Height = 40;
+                            TextBlock b = (TextBlock)d.Children[1];
+                            b.Foreground = System.Windows.Media.Brushes.White;
+                            b.FontSize = 30;
+                            if (previewIndex > 2)
+                            {
+                                ContentPresenter startItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex - 2);
+                                Point relativePoint = startItem.TransformToAncestor(preview).Transform(new Point(0, 0));
+                                relativePoint.Offset(5.0, 5.0);
+                                ScrollToPosition(relativePoint.X, relativePoint.Y);
+                            }
+                        }
+                        if (previewIndex < preview.Items.Count - 1)
+                        {
+                            previewIndex++;
+                        }
+                    }
+                }
+            }
+        }
+        private void jumpToCurrentPreviewIndex()
+        {
+            if (originalLyric != "" && originalLyric != null)
+            {
+                int result = 0;
+                bool go = true;
+                for (int index = 0; index < preview.Items.Count; index++)
+                {
+                    LyricData data = (LyricData)preview.Items[index];
+                    if (data.Tag != null && data.Tag != "")
+                    {
+                        double dataTime = TimeSpan.ParseExact(data.Tag, @"mm\:ss\.ff", null).TotalMilliseconds;
+                        double timerTime = TimeSpan.ParseExact((string)timerLabel.Content, @"mm\:ss\.ff", null).TotalMilliseconds;
+                        if (dataTime == timerTime)
+                        {
+                            result = index;
+                            break;
+                        }
+                        else if (dataTime > timerTime)
+                        {
+                            result = index - 1;
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        go = false;
+                        break;
+                    }
+                }
+                if (go)
+                {
+                    previewIndex = result + 1;
+                    ContentPresenter previousItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(result);
+                    Grid pd = (Grid)VisualTreeHelper.GetChild(previousItem, 0);
+                    pd.Height = 40;
+                    TextBlock pb = (TextBlock)pd.Children[1];
+                    pb.Foreground = System.Windows.Media.Brushes.White;
+                    pb.FontSize = 30;
+                    if (previewIndex > 2)
+                    {
+                        ContentPresenter startItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(previewIndex - 2);
+                        Point relativePoint = startItem.TransformToAncestor(preview).Transform(new Point(0, 0));
+                        relativePoint.Offset(5.0, 5.0);
+                        ScrollToPosition(relativePoint.X, relativePoint.Y);
+                    }
+                    else
+                    {
+                        ContentPresenter startItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(0);
+                        Point relativePoint = startItem.TransformToAncestor(preview).Transform(new Point(0, 0));
+                        ScrollToPosition(relativePoint.X, relativePoint.Y);
+                    }
+                }
+            }
+        }
+        private void PreviewEmphasizedClear()
+        {
+            if (originalLyric != "" && originalLyric != null)
+            {
+                for (int index = 0; index < preview.Items.Count; index++)
+                {
+                    ContentPresenter previousItem = (ContentPresenter)preview.ItemContainerGenerator.ContainerFromIndex(index);
+                    Grid pd = (Grid)VisualTreeHelper.GetChild(previousItem, 0);
+                    if (pd.Height != 30)
+                    {
                         pd.Height = 30;
                         TextBlock pb = (TextBlock)pd.Children[1];
                         pb.Foreground = System.Windows.Media.Brushes.Black;
                         pb.FontSize = 20;
                     }
-                    var item = preview.ItemContainerGenerator.ContainerFromIndex(previewIndex);
-                    Grid d = (Grid)VisualTreeHelper.GetChild(item, 0);
-                    d.Height = 40;
-                    TextBlock b = (TextBlock)d.Children[1];
-                    b.Foreground = System.Windows.Media.Brushes.White;
-                    b.FontSize = 30;
-                }
-                if (previewIndex > 2)
-                {
-                    previewScroll.ScrollToVerticalOffset(previewScroll.VerticalOffset + 30);
-                }
-                if (previewIndex < preview.Items.Count - 1)
-                {
-                    previewIndex++;
                 }
             }
         }
-        /*
-         Point relativePoint = btn.TransformToAncestor(mainContent).Transform(new Point(0, 0));
-            ScrollToPosition(relativePoint.X, relativePoint.Y);
-         */
         private void ScrollToPosition(double x, double y)
         {
             DoubleAnimation vertAnim = new DoubleAnimation();
@@ -239,18 +317,15 @@ namespace WpfApp1
 
         private void UpdateProgress()
         {
-            if (!sliderLock)
+            if (isInitiated&&!sliderLock)
             {
-                var currentTime = reader.CurrentTime; // 当前时间
-                var timeTag = TimeSpan.FromMilliseconds(position);
-                _ = Dispatcher.BeginInvoke((Action)delegate
-                {
-                    line.StartPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, 0);
-                    line.EndPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, -70);
-                    path.Data = line;
-                    timerLabel.Content = timeTag.ToString(@"mm\:ss\.ff");
-                    current.Content = currentTime.ToString(@"mm\:ss");
-                });
+                TimeSpan currentTime = reader.CurrentTime; // 当前时间
+                TimeSpan timeTag = TimeSpan.FromMilliseconds(position);
+                line.StartPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds + 3, 0);
+                line.EndPoint = new Point(img.Width * currentTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds + 3, -70);
+                path.Data = line;
+                timerLabel.Content = timeTag.ToString(@"mm\:ss\.ff");
+                current.Content = currentTime.ToString(@"mm\:ss");
             }
         }
 
@@ -265,18 +340,18 @@ namespace WpfApp1
                 Directory.CreateDirectory(root);
             }
             //生成波形保存到目标目录
-            var samplingPeakProvider = new SamplingPeakProvider(200); // e.g. 200
-            var myRendererSettings = new StandardWaveFormRendererSettings();
+            SamplingPeakProvider samplingPeakProvider = new SamplingPeakProvider(200); // e.g. 200
+            StandardWaveFormRendererSettings myRendererSettings = new StandardWaveFormRendererSettings();
             myRendererSettings.Width = 2400;
             myRendererSettings.TopHeight = 100;
             myRendererSettings.BottomHeight = 100;
             myRendererSettings.BackgroundColor = System.Drawing.Color.Transparent;
             myRendererSettings.TopPeakPen = new System.Drawing.Pen(System.Drawing.Color.FromArgb(37, 150, 190));
             myRendererSettings.BottomPeakPen = new System.Drawing.Pen(System.Drawing.Color.FromArgb(37, 150, 190));
-            var renderer = new WaveFormRenderer();
-            var image = renderer.Render(name, samplingPeakProvider, myRendererSettings);
+            WaveFormRenderer renderer = new WaveFormRenderer();
+            System.Drawing.Image image = renderer.Render(name, samplingPeakProvider, myRendererSettings);
             string titleName = title.Replace(".mp3", "") + ".png";
-            var destination = Path.Combine(root, titleName);
+            string destination = Path.Combine(root, titleName);
             if (!File.Exists(destination))
             {
                 image.Save(destination);
@@ -305,8 +380,8 @@ namespace WpfApp1
             }
         }
 
-        int clickCounter = 0;
-        bool isClickOnTitle = false;
+        private int clickCounter = 0;
+        private bool isClickOnTitle = false;
         /// <summary>
         /// 标题栏双击事件
         /// </summary>
@@ -323,7 +398,7 @@ namespace WpfApp1
             {
                 timer.IsEnabled = false;
                 clickCounter = 0;
-                this.WindowState = this.WindowState == WindowState.Maximized ?
+                WindowState = WindowState == WindowState.Maximized ?
                               WindowState.Normal : WindowState.Maximized;
             }
         }
@@ -341,7 +416,7 @@ namespace WpfApp1
         /// </summary>
         private void btn_min_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized; //设置窗口最小化
+            WindowState = WindowState.Minimized; //设置窗口最小化
         }
 
         /// <summary>
@@ -349,15 +424,15 @@ namespace WpfApp1
         /// </summary>
         private void btn_max_Click(object sender, RoutedEventArgs e)
         {
-            if (this.WindowState == WindowState.Maximized)
+            if (WindowState == WindowState.Maximized)
             {
-                this.WindowState = WindowState.Normal; //设置窗口还原
+                WindowState = WindowState.Normal; //设置窗口还原
                 maximizeImage.SetResourceReference(Image.SourceProperty, "maximizeDrawingImage");
                 maximizeImage.Height = 11;
             }
             else
             {
-                this.WindowState = WindowState.Maximized; //设置窗口最大化
+                WindowState = WindowState.Maximized; //设置窗口最大化
                 maximizeImage.SetResourceReference(Image.SourceProperty, "maximize1DrawingImage");
                 maximizeImage.Height = 12;
             }
@@ -368,7 +443,7 @@ namespace WpfApp1
         /// </summary>
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
             waitingWindow.Close();
         }
         #endregion 标题栏事件
@@ -379,18 +454,11 @@ namespace WpfApp1
             if (isInitiated)
             {
                 previewScroll.ScrollToVerticalOffset(0);
-                
                 reader.CurrentTime = TimeSpan.Zero;
                 position = 0;
+                PreviewEmphasizedClear();
                 previewIndex = 0;
-                if (player.PlaybackState != PlaybackState.Playing)
-                {
-                    line.StartPoint = new Point(0, 0);
-                    line.EndPoint = new Point(0, -70);
-                    path.Data = line;
-                }
-                current.Content = reader.CurrentTime.ToString(@"mm\:ss");
-                timerLabel.Content = TimeSpan.FromMilliseconds(position).ToString(@"mm\:ss\.ff");
+                UpdateProgress();
             }
         }
 
@@ -401,11 +469,7 @@ namespace WpfApp1
                 StopAction();
                 reader.CurrentTime = reader.TotalTime;
                 position = reader.TotalTime.TotalMilliseconds;
-                line.StartPoint = new Point(img.Width * reader.TotalTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, 0);
-                line.EndPoint = new Point(img.Width * reader.TotalTime.TotalMilliseconds / reader.TotalTime.TotalMilliseconds, -70);
-                path.Data = line;
-                current.Content = reader.CurrentTime.ToString(@"mm\:ss");
-                timerLabel.Content = TimeSpan.FromMilliseconds(position).ToString(@"mm\:ss\.ff");
+                UpdateProgress();
             }
         }
 
@@ -454,6 +518,8 @@ namespace WpfApp1
             position = 0;
             _ = Dispatcher.BeginInvoke((Action)delegate
             {
+                PreviewEmphasizedClear();
+                previewIndex = 0;
                 playImage.SetResourceReference(Image.SourceProperty, "playDrawingImage");
                 play.ToolTip = "播放 Space";
                 play.Tag = "true";
@@ -470,7 +536,7 @@ namespace WpfApp1
 
         private void UpdateVolume()
         {
-            var volume = volumeSlider.Value / 100;
+            double volume = volumeSlider.Value / 100;
             volumeProvider.Volume = (float)volume;
         }
 
@@ -492,17 +558,15 @@ namespace WpfApp1
         {
             if (isInitiated)
             {
+                isInitiated = false;
                 cts.Cancel();
                 cts.Dispose();
                 reader.Dispose();
                 Disposeplayer();
-                isInitiated = false;
             }
         }
         #endregion
 
-        private System.Windows.Point StartPoint;//进度条上的点击位
-        private LineGeometry line = new LineGeometry();//进度条显示线段
         #region 卷帘窗废弃代码
         /*private void img_MouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -580,7 +644,9 @@ namespace WpfApp1
         }*/
         #endregion 卷帘窗废弃代码
 
-        bool isClickOnImg = false;
+        private System.Windows.Point StartPoint;//进度条上的点击位
+        private LineGeometry line = new LineGeometry();//进度条显示线段
+        private bool isClickOnImg = false;
         private void img_MouseDown(object sender, MouseButtonEventArgs e)
         {
             isClickOnImg = true;
@@ -595,11 +661,13 @@ namespace WpfApp1
                 reader.CurrentTime = TimeSpan.FromMilliseconds(StartPoint.X / img.Width * reader.TotalTime.TotalMilliseconds);
                 position = reader.CurrentTime.TotalMilliseconds;
                 UpdateProgress();
+                PreviewEmphasizedClear();
+                jumpToCurrentPreviewIndex();
                 isClickOnImg = false;
             }
         }
 
-        double volBefore = 0;//记录先前音量
+        private double volBefore = 0;//记录先前音量
         private void volume_Click(object sender, RoutedEventArgs e)
         {
             if (volumeSlider.Tag.ToString() == "Pass")
@@ -621,7 +689,7 @@ namespace WpfApp1
             }
         }
 
-        AddSongs addSongsWindow;//添加音乐窗口
+        private AddSongs addSongsWindow;//添加音乐窗口
         private void addSong_Click(object sender, RoutedEventArgs e)
         {
             addSongsWindow = new AddSongs();
@@ -685,8 +753,8 @@ namespace WpfApp1
                 string originalURL = fileName;
                 string id = originalURL.Split('=')[1];
                 string address = @"https://music.163.com/song?id=" + id;
-                var config = Configuration.Default.WithDefaultLoader();
-                var context = BrowsingContext.New(config);
+                IConfiguration config = Configuration.Default.WithDefaultLoader();
+                IBrowsingContext context = BrowsingContext.New(config);
 
                 IDocument document = await context.OpenAsync(address);
                 string innerHtml = document.Body.InnerHtml;
@@ -721,7 +789,7 @@ namespace WpfApp1
                     {
                         Directory.CreateDirectory(root);
                     }
-                    var destination = Path.Combine(root, title + ".mp3");
+                    string destination = Path.Combine(root, title + ".mp3");
                     WebClient dc = new WebClient();
                     dc.DownloadFile(new Uri(location), destination);//下载MP3文件到目标目录
                     if (!File.Exists(Path.Combine(root, albumName + ".jpg")))
@@ -756,10 +824,10 @@ namespace WpfApp1
             }
         }
 
-        string originalLyric;
-        string translatedLyric;
-        bool translationSet = false;
-        bool isSecondTime = false;
+        private string originalLyric;
+        private string translatedLyric;
+        private bool translationSet = false;
+        private bool isSecondTime = false;
         private void addLyric_Click(object sender, RoutedEventArgs e)//TODO: 添加对压缩后的标签歌词的支持
         {
             AddLyrics addLyrics = new AddLyrics();
@@ -843,7 +911,7 @@ namespace WpfApp1
             String s = (string)label.Content;
             if (s != "" && s != null)
             {
-                this.Cursor = Cursors.SizeNS;
+                Cursor = Cursors.SizeNS;
             }
         }
 
@@ -872,7 +940,7 @@ namespace WpfApp1
             if (isLabelMouseDown)
             {
                 isLabelMouseDown = false;
-                this.Cursor = Cursors.Arrow;
+                Cursor = Cursors.Arrow;
                 LyricView.Items.Refresh();
                 MouseHook.OnMouseUp -= MouseHookMouseUp;
             }
@@ -882,7 +950,7 @@ namespace WpfApp1
         {
             if (!isLabelMouseDown)
             {
-                this.Cursor = Cursors.Arrow;
+                Cursor = Cursors.Arrow;
             }
         }
 
@@ -958,11 +1026,13 @@ namespace WpfApp1
                     reader.CurrentTime = TimeSpan.ParseExact(tag, @"mm\:ss\.ff", null);
                     position = reader.CurrentTime.TotalMilliseconds;
                     UpdateProgress();
+                    PreviewEmphasizedClear();
+                    jumpToCurrentPreviewIndex();
                 }
             }
         }
 
-        bool IsMousePressed = false;
+        private bool IsMousePressed = false;
         private void ListBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             IsMousePressed = true;

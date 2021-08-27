@@ -421,8 +421,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="510"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="430"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="38.2"/>
         </Grid.RowDefinitions>
         <DockPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="30" MouseMove="TitleBar_MouseMove" MouseUp="DockPanel_MouseUp" MouseDown="TitleBar_MouseDown" Background="#4C9CFB" DockPanel.Dock="Top">
             <TextBlock Name="txtTitle"  Padding="5,3,2,3" Text="lllLRC Maker" 
@@ -497,14 +498,12 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Grid>
-
-            <ScrollViewer x:Name="scroll" Focusable="False" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" Height="70">
-                <Image Name="img" Height="70" Width="800" Stretch="Fill" MouseDown="img_MouseDown" MouseUp="img_MouseUp"/>
-            </ScrollViewer>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2">
+            <Image Focusable="False" Name="img" Height="70" Width="800" Stretch="Fill" MouseDown="img_MouseDown" MouseUp="img_MouseUp"/>
             <Path x:Name="path" Stroke="Black" MouseUp="img_MouseUp"></Path>
         </StackPanel>
-        <StackPanel Name="playStack"  Orientation="Horizontal" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" Visibility="Visible">
-
+        <StackPanel Name="playStack"  Orientation="Horizontal" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
             <Button x:Name="addSong" Width="30" Height="30" BorderThickness="0" Background="Transparent" Focusable="False" Click="addSong_Click" ToolTip="添加歌曲">
                 <Image Source="{StaticResource file_earmark_musicDrawingImage}"></Image>
             </Button>
