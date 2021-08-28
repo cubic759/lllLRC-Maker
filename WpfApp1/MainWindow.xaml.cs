@@ -282,7 +282,7 @@ namespace WpfApp1
             vertAnim.From = previewScroll.VerticalOffset;
             vertAnim.To = y;
             vertAnim.DecelerationRatio = .2;
-            vertAnim.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+            vertAnim.Duration = new Duration(TimeSpan.FromMilliseconds(200));
             DoubleAnimation horzAnim = new DoubleAnimation();
             horzAnim.From = previewScroll.HorizontalOffset;
             horzAnim.To = x;

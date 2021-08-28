@@ -408,7 +408,7 @@
         <KeyBinding Gesture="Space" Command="{StaticResource Play}"/>
         <KeyBinding Gesture="Ctrl+Left" Command="{StaticResource GoToFront}"/>
         <KeyBinding Gesture="Ctrl+Right" Command="{StaticResource GoToBack}"/>
-        <!--回退键去除当前标签，delete键删除行，ctrl+z撤销，+y重做，←回退5s-->
+        <!--回退键去除当前标签，delete键删除行，tab 添加空行, ctrl+z撤销，+y重做，←回退5s-->
     </Window.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed"/>
@@ -446,9 +446,9 @@
         </DockPanel>
         <Menu Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="800" Background="Azure">
             <MenuItem Header="文件" Height="30" ItemContainerStyle="{DynamicResource MenuItemStyle1}">
-                <MenuItem Name="menuOpen" Background="Azure" Header="打开"></MenuItem>
+                <MenuItem Background="Azure" Header="打开"></MenuItem>
                 <MenuItem Header="保存" Background="Azure"></MenuItem>
-                <MenuItem Header="退出" Background="Azure"></MenuItem>
+                <MenuItem Header="退出" Background="Azure" Click="btn_close_Click"></MenuItem>
             </MenuItem>
             <MenuItem Header="设置" Height="30"></MenuItem>
             <MenuItem Header="关于" Height="30"></MenuItem>

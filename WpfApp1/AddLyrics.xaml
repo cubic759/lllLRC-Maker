@@ -73,24 +73,26 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button x:Name="removeEmptyLines" Grid.Column="0" Click="removeEmptyLines_Click" Width="30" Background="White" ToolTip="去除空行" Style="{DynamicResource ButtonStyle1}">
+            <Button x:Name="removeEmptyLines" Grid.Column="0" Click="removeEmptyLines_Click" Width="30" Height="25" VerticalAlignment="Top" Background="White" ToolTip="去除空行" Style="{DynamicResource ButtonStyle1}">
                 <Image x:Name="removeEmptyLinesImage" Source="{StaticResource deleteEmptyDrawingImage}" Height="20" ></Image>
             </Button>
-            <Button x:Name="removeTags" Grid.Column="1" Click="removeTags_Click" ToolTip="移除标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+            <Button x:Name="removeTags" Grid.Column="1" Click="removeTags_Click" ToolTip="移除标签" Width="30" Height="25" VerticalAlignment="Top" Background="White" Style="{DynamicResource ButtonStyle1}">
                 <Image x:Name="removeTagsImage" Source="{StaticResource removeTagsDrawingImage}" Height="20" ></Image>
             </Button>
-            <Button x:Name="compressTags" Grid.Column="2" Click="compressTags_Click" ToolTip="压缩标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+            <Button x:Name="compressTags" Grid.Column="2" Click="compressTags_Click" ToolTip="压缩标签" Width="30" Height="25" VerticalAlignment="Top" Background="White" Style="{DynamicResource ButtonStyle1}">
                 <Image x:Name="compressTagsImage" Source="{StaticResource compressDrawingImage}" Height="20" ></Image>
             </Button>
-            <Button x:Name="decompressTags" Grid.Column="3" Click="decompressTags_Click" ToolTip="解压标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
+            <Button x:Name="decompressTags" Grid.Column="3" Click="decompressTags_Click" ToolTip="解压标签" Width="30" Height="25" VerticalAlignment="Top" Background="White" Style="{DynamicResource ButtonStyle1}">
                 <Image x:Name="decompressTagsImage" Source="{StaticResource decompressDrawingImage}" Height="20" ></Image>
             </Button>
-            <Button x:Name="synchronizeTags" Grid.Column="4" Click="synchronizeTags_Click" ToolTip="同步翻译标签" Width="30" Background="White" Style="{DynamicResource ButtonStyle1}">
-                <Image x:Name="synchronizeTagsImage" Source="{StaticResource synchronizeDrawingImage}" Height="20" ></Image>
+            <Button x:Name="synchronizeTags" Grid.Column="4" Click="synchronizeTags_Click" ToolTip="同步翻译标签" Width="30" Height="25" VerticalAlignment="Top" Background="White" Style="{DynamicResource ButtonStyle1}">
+                <Image x:Name="synchronizeTagsImage" Source="{StaticResource synchronizeDrawingImage}" Height="15" ></Image>
             </Button>
-            <CheckBox x:Name="setTranslate" Click="setTranslate_Click" Grid.Column="5" VerticalAlignment="Center" ToolTip="添加翻译">翻译</CheckBox>
-            <Button IsDefault="True" Background="White" Grid.Column="6" VerticalAlignment="Top" Width="80" Height="25" Click="Button_Click" Style="{DynamicResource ButtonStyle1}">确定</Button>
-            <Button IsCancel="True" Grid.Column="7" Background="White" VerticalAlignment="Top" HorizontalContentAlignment="Center" Width="80" Height="25" Style="{DynamicResource ButtonStyle1}">取消</Button>
+            <Grid Grid.Column="5" Height="25" VerticalAlignment="Top">
+                <CheckBox x:Name="setTranslate" Click="setTranslate_Click" VerticalAlignment="Bottom" ToolTip="打开翻译">翻译</CheckBox>
+            </Grid>
+            <Button IsDefault="True" Background="White" Grid.Column="6" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="80" Height="25" Click="Button_Click" Style="{DynamicResource ButtonStyle1}">确定</Button>
+            <Button IsCancel="True" Grid.Column="7" Background="White" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="80" Height="25" Style="{DynamicResource ButtonStyle1}">取消</Button>
             
         </Grid>
         <ScrollViewer x:Name="scroll" Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" ScrollBar.Scroll="ScrollViewer_Scroll" >
