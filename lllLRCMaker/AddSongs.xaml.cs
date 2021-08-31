@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace WpfApp1
+namespace lllLRCMaker
 {
     /// <summary>
     /// AddSongs.xaml 的交互逻辑

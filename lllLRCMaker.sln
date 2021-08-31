@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{B1154AFD-DB06-400C-B77F-ECB80DCD9E62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lllLRCMaker", "lllLRCMaker\lllLRCMaker.csproj", "{B1154AFD-DB06-400C-B77F-ECB80DCD9E62}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF6BA3C4-0992-4DC5-A947-7F97F37027E5}"
 	ProjectSection(SolutionItems) = preProject

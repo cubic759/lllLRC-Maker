@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
-namespace WpfApp1
+namespace lllLRCMaker
 {
     /// <summary>
     /// AddLyrics.xaml 的交互逻辑

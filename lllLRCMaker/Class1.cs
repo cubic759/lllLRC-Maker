@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace WpfApp1
+namespace lllLRCMaker
 {
     public sealed class Class1
     {

@@ -19,7 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace WpfApp1
+namespace lllLRCMaker
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
@@ -45,11 +45,6 @@ namespace WpfApp1
         }
 
         #region 命令
-
-        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)//执行之后做的事
-        {
-            MessageBox.Show("The New command was invoked");
-        }
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -92,6 +87,126 @@ namespace WpfApp1
         #endregion 命令
 
         #region 主要方法
+
+        private System.Drawing.Color getMajorColor(System.Drawing.Bitmap bitmap)
+        {
+            //色调的总和
+            double sum_hue = 0d;
+            //色差的阈值
+            int threshold = 30;
+            //计算色调总和
+            for (int h = 0; h < bitmap.Height; h++)
+            {
+                for (int w = 0; w < bitmap.Width; w++)
+                {
+                    float hue = bitmap.GetPixel(w, h).GetHue();
+                    sum_hue += hue;
+                }
+            }
+            double avg_hue = sum_hue / (bitmap.Width * bitmap.Height);
+
+            //色差大于阈值的颜色值
+            List<System.Drawing.Color> rgbs = new List<System.Drawing.Color>();
+            for (int h = 0; h < bitmap.Height; h++)
+            {
+                for (int w = 0; w < bitmap.Width; w++)
+                {
+                    System.Drawing.Color color = bitmap.GetPixel(w, h);
+                    float hue = color.GetHue();
+                    //如果色差大于阈值，则加入列表
+                    if (Math.Abs(hue - avg_hue) > threshold)
+                    {
+                        rgbs.Add(color);
+                    }
+                }
+            }
+            if (rgbs.Count == 0)
+                return System.Drawing.Color.Black;
+            //计算列表中的颜色均值，结果即为该图片的主色调
+            int sum_r = 0, sum_g = 0, sum_b = 0;
+            foreach (System.Drawing.Color rgb in rgbs)
+            {
+                sum_r += rgb.R;
+                sum_g += rgb.G;
+                sum_b += rgb.B;
+            }
+            return System.Drawing.Color.FromArgb(sum_r / rgbs.Count,
+                sum_g / rgbs.Count,
+                sum_b / rgbs.Count);
+        }
+
+        private Color getDifferentHueColor(System.Drawing.Color ColorTo, System.Drawing.Color ColorFrom)//将原色色调转换到目标色调
+        {
+            float hue = ColorTo.GetHue();
+            float saturation = ColorFrom.GetSaturation();
+            float brightness = ColorFrom.GetBrightness();
+            Color result = HSB2RGB(hue, saturation, brightness);
+            return result;
+        }
+
+        private Color HSB2RGB(float hue, float saturation, float brightness)
+        {
+            if (hue == 360)
+            {
+                hue = 0;
+            }
+            float r = 0;
+            float g = 0;
+            float b = 0;
+            if (saturation == 0)
+            {
+                r = g = b = brightness;
+            }
+            else
+            {
+                float sectorPos = hue / 60f;
+                int sectorNum = (int)Math.Floor(sectorPos);
+                float fractionalSector = sectorPos - sectorNum;
+                float p = brightness * (1 - saturation);
+                float q = brightness * (1 - (saturation * fractionalSector));
+                float t = brightness * (1 - (saturation * (1 - fractionalSector)));
+                switch (sectorNum)
+                {
+                    case 0:
+                        r = brightness;
+                        g = t;
+                        b = p;
+                        break;
+                    case 1:
+                        r = q;
+                        g = brightness;
+                        b = p;
+                        break;
+                    case 2:
+                        r = p;
+                        g = brightness;
+                        b = t;
+                        break;
+                    case 3:
+                        r = p;
+                        g = q;
+                        b = brightness;
+                        break;
+                    case 4:
+                        r = t;
+                        g = p;
+                        b = brightness;
+                        break;
+                    case 5:
+                        r = brightness;
+                        g = p;
+                        b = q;
+                        break;
+                }
+            }
+            return Color.FromRgb((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+        }
+
+        private System.Drawing.Color convertToDrawingColor(Color colorFrom)
+        {
+            return System.Drawing.Color.FromArgb(colorFrom.A, colorFrom.R, colorFrom.G, colorFrom.B);
+        }
+
         public void initialization(string fileName)
         {
             _ = Dispatcher.BeginInvoke((Action)delegate
@@ -329,8 +444,9 @@ namespace WpfApp1
             myRendererSettings.TopHeight = 100;
             myRendererSettings.BottomHeight = 100;
             myRendererSettings.BackgroundColor = System.Drawing.Color.Transparent;
-            myRendererSettings.TopPeakPen = new System.Drawing.Pen(System.Drawing.Color.FromArgb(37, 150, 190));
-            myRendererSettings.BottomPeakPen = new System.Drawing.Pen(System.Drawing.Color.FromArgb(37, 150, 190));
+            System.Drawing.Color waveColor = convertToDrawingColor(getDifferentHueColor(backgroundMajorColor, System.Drawing.Color.FromArgb(37, 150, 190)));
+            myRendererSettings.TopPeakPen = new System.Drawing.Pen(waveColor);
+            myRendererSettings.BottomPeakPen = new System.Drawing.Pen(waveColor);
             WaveFormRenderer renderer = new WaveFormRenderer();
             System.Drawing.Image image = renderer.Render(name, samplingPeakProvider, myRendererSettings);
             string titleName = title.Replace(".mp3", "") + ".png";
@@ -345,6 +461,9 @@ namespace WpfApp1
                 {
                     albumImg.Source = null;
                 }
+                dock.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)dock.Background).Color)).ToString());
+                grid.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)grid.Background).Color)).ToString());
+                menu.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)menu.Background).Color)).ToString());
                 img.Source = new BitmapImage(new Uri(destination, UriKind.RelativeOrAbsolute));
                 waitingWindow.Hide();
             });
@@ -697,6 +816,7 @@ namespace WpfApp1
             }
         }
 
+        private System.Drawing.Color backgroundMajorColor;
         private async void GetInformation()
         {
             _ = Dispatcher.BeginInvoke((Action)delegate
@@ -775,18 +895,20 @@ namespace WpfApp1
                     string destination = Path.Combine(root, title + ".mp3");
                     WebClient dc = new WebClient();
                     dc.DownloadFile(new Uri(location), destination);//下载MP3文件到目标目录
-                    if (!File.Exists(Path.Combine(root, albumName + ".jpg")))
+                    string imgAddress = Path.Combine(root, albumName + ".jpg");
+                    if (!File.Exists(imgAddress))
                     {
-                        dc.DownloadFile(new Uri(imageUrl), Path.Combine(root, albumName + ".jpg"));
+                        dc.DownloadFile(new Uri(imageUrl), imgAddress);
                     }
                     dc.Dispose();
                     myHttpWebResponse.Close();
                     myRequest.Abort();
                     document.Close();
                     context.Dispose();
+                    backgroundMajorColor = getMajorColor(new System.Drawing.Bitmap(imgAddress));
                     _ = Dispatcher.BeginInvoke((Action)delegate
                     {
-                        albumImg.Source = new BitmapImage(new Uri(Path.Combine(root, albumName + ".jpg"), UriKind.RelativeOrAbsolute));
+                        albumImg.Source = new BitmapImage(new Uri(imgAddress, UriKind.RelativeOrAbsolute));
                     });
                     try
                     {
@@ -1035,6 +1157,85 @@ namespace WpfApp1
         private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void AddEmptyLine_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void RemoveTag_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void GoFront5s_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (isInitiated)
+            {
+                if (reader.CurrentTime.TotalSeconds > 5)
+                {
+                    reader.CurrentTime -= TimeSpan.FromSeconds(5);
+                }
+                else
+                {
+                    reader.CurrentTime = TimeSpan.Zero;
+                }
+                UpdateProgress();
+            }
+        }
+
+        private void GoBack5s_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (isInitiated)
+            {
+                if (reader.CurrentTime.TotalSeconds < reader.TotalTime.TotalSeconds - 5)
+                {
+                    reader.CurrentTime += TimeSpan.FromSeconds(5);
+                }
+                else
+                {
+                    reader.CurrentTime = reader.TotalTime;
+                }
+                UpdateProgress();
+            }
+        }
+
+        private void DeleteALine_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Version 0.0.1");
+        }
+
+        private void Setting_Click(object sender, RoutedEventArgs e)
+        {
+            Setting setting = new Setting();
+            setting.Owner = this;
+            setting.ShowDialog();
+        }
+
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
     public class LyricData

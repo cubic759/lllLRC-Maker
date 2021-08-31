@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WpfApp1
+namespace lllLRCMaker
 {
     public static class MergeSort
     {
