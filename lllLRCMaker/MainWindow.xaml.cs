@@ -134,74 +134,66 @@ namespace lllLRCMaker
                 sum_g / rgbs.Count,
                 sum_b / rgbs.Count);
         }
-
         private Color getDifferentHueColor(System.Drawing.Color ColorTo, System.Drawing.Color ColorFrom)//将原色色调转换到目标色调
         {
+            byte alpha = ColorFrom.A;
             float hue = ColorTo.GetHue();
             float saturation = ColorFrom.GetSaturation();
             float brightness = ColorFrom.GetBrightness();
-            Color result = HSB2RGB(hue, saturation, brightness);
+            Color result = HSB2RGB(alpha, hue, saturation, brightness);
             return result;
         }
-
-        private Color HSB2RGB(float hue, float saturation, float brightness)
+        public static Color HSB2RGB(byte alpha, float hue, float saturation, float brightness)
         {
-            if (hue == 360)
-            {
-                hue = 0;
-            }
-            float r = 0;
-            float g = 0;
-            float b = 0;
+            int r = 0, g = 0, b = 0;
             if (saturation == 0)
             {
-                r = g = b = brightness;
+                r = g = b = (int)(brightness * 255.0f + 0.5f);
             }
             else
             {
-                float sectorPos = hue / 60f;
-                int sectorNum = (int)Math.Floor(sectorPos);
-                float fractionalSector = sectorPos - sectorNum;
-                float p = brightness * (1 - saturation);
-                float q = brightness * (1 - (saturation * fractionalSector));
-                float t = brightness * (1 - (saturation * (1 - fractionalSector)));
-                switch (sectorNum)
+                float h = (hue - (float)Math.Floor(hue)) * 6.0f;
+                float f = h - (float)Math.Floor(h);
+                float p = brightness * (1.0f - saturation);
+                float q = brightness * (1.0f - saturation * f);
+                float t = brightness * (1.0f - (saturation * (1.0f - f)));
+                switch ((int)h)
                 {
                     case 0:
-                        r = brightness;
-                        g = t;
-                        b = p;
+                        r = (int)(brightness * 255.0f + 0.5f);
+                        g = (int)(t * 255.0f + 0.5f);
+                        b = (int)(p * 255.0f + 0.5f);
                         break;
                     case 1:
-                        r = q;
-                        g = brightness;
-                        b = p;
+                        r = (int)(q * 255.0f + 0.5f);
+                        g = (int)(brightness * 255.0f + 0.5f);
+                        b = (int)(p * 255.0f + 0.5f);
                         break;
                     case 2:
-                        r = p;
-                        g = brightness;
-                        b = t;
+                        r = (int)(p * 255.0f + 0.5f);
+                        g = (int)(brightness * 255.0f + 0.5f);
+                        b = (int)(t * 255.0f + 0.5f);
                         break;
                     case 3:
-                        r = p;
-                        g = q;
-                        b = brightness;
+                        r = (int)(p * 255.0f + 0.5f);
+                        g = (int)(q * 255.0f + 0.5f);
+                        b = (int)(brightness * 255.0f + 0.5f);
                         break;
                     case 4:
-                        r = t;
-                        g = p;
-                        b = brightness;
+                        r = (int)(t * 255.0f + 0.5f);
+                        g = (int)(p * 255.0f + 0.5f);
+                        b = (int)(brightness * 255.0f + 0.5f);
                         break;
                     case 5:
-                        r = brightness;
-                        g = p;
-                        b = q;
+                        r = (int)(brightness * 255.0f + 0.5f);
+                        g = (int)(p * 255.0f + 0.5f);
+                        b = (int)(q * 255.0f + 0.5f);
                         break;
                 }
             }
-            return Color.FromRgb((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+            Console.WriteLine(alpha + " " + (byte)(r * 255) + " " + (byte)(g * 255) + " " + (byte)(b * 255));
+            return Color.FromArgb(alpha, Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
         }
-
         private System.Drawing.Color convertToDrawingColor(Color colorFrom)
         {
             return System.Drawing.Color.FromArgb(colorFrom.A, colorFrom.R, colorFrom.G, colorFrom.B);
@@ -436,6 +428,11 @@ namespace lllLRCMaker
             if (!Directory.Exists(root))
             {
                 Directory.CreateDirectory(root);
+            }
+            if (backgroundMajorColor == System.Drawing.Color.Empty)
+            {
+                Random random = new Random(6);
+                backgroundMajorColor = System.Drawing.Color.FromArgb(random.Next(255), random.Next(255), random.Next(255));
             }
             //生成波形保存到目标目录
             SamplingPeakProvider samplingPeakProvider = new SamplingPeakProvider(200); // e.g. 200
@@ -696,7 +693,7 @@ namespace lllLRCMaker
                 isEdited = true;
             }
         }
-        
+
         private void img_MouseMove(object sender, MouseEventArgs e)
         {
             if (isEdited)
@@ -727,8 +724,8 @@ namespace lllLRCMaker
                     current.Content = TimeSpan.FromMilliseconds(Point.X / 800 * reader.TotalTime.TotalMilliseconds).ToString(@"mm\:ss");
                     timerLabel.Content = TimeSpan.FromMilliseconds(Point.X / 800 * reader.TotalTime.TotalMilliseconds).ToString(@"mm\:ss\.ff");
                 }
-                
-                
+
+
                 if (scroll.HorizontalOffset == 0 || img.Width - scroll.HorizontalOffset == 800)
                 {
                     line.StartPoint = new Point(Point.X - scroll.HorizontalOffset, 0);
@@ -740,8 +737,8 @@ namespace lllLRCMaker
                     line.EndPoint = new Point(Point.X - scroll.HorizontalOffset + EndPoint.X - StartPoint.X, -70);
                 }
                 path.Data = line;
-                
-                
+
+
             }
         }*/
         #endregion 卷帘窗废弃代码
@@ -816,7 +813,7 @@ namespace lllLRCMaker
             }
         }
 
-        private System.Drawing.Color backgroundMajorColor;
+        private System.Drawing.Color backgroundMajorColor = System.Drawing.Color.Empty;
         private async void GetInformation()
         {
             _ = Dispatcher.BeginInvoke((Action)delegate
@@ -926,6 +923,11 @@ namespace lllLRCMaker
                 {
                     MessageBox.Show("无法解析链接，请重试");
                 }
+                /*_ = Dispatcher.BeginInvoke((Action)delegate
+                {
+                    waitingWindow.Hide();
+                });
+                MessageBox.Show("已废弃功能");*/
             }
         }
 
@@ -1166,7 +1168,14 @@ namespace lllLRCMaker
 
         private void RemoveTag_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-
+            ICollectionView view = (ICollectionView)CollectionViewSource.GetDefaultView(LyricView.ItemsSource);
+            List<LyricData> items = new List<LyricData>();
+            items = (List<LyricData>)view.SourceCollection;
+            LyricData c = items[selectedIndex];
+            c.Tag = "";
+            items.RemoveAt(selectedIndex);
+            items.Insert(selectedIndex, c);
+            LyricView.Items.Refresh();
         }
 
         private void GoFront5s_Executed(object sender, ExecutedRoutedEventArgs e)

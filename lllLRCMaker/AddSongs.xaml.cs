@@ -27,7 +27,7 @@ namespace lllLRCMaker
             {
                 fileName = ofd.FileName;
                 hasFile = true;
-                FileName.Content = fileName;
+                FileName.Content = ofd.SafeFileName;
                 selectFileButton.Visibility = Visibility.Hidden;
                 fileInfo.Visibility = Visibility.Visible;
             }

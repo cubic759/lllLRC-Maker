@@ -486,8 +486,6 @@
                 </Image>
                 <local:AniScrollViewer x:Name="previewScroll" Background="Transparent"  BorderThickness="0" Grid.Column="0" VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Disabled" Height="150">
                     <ItemsControl x:Name="preview" HorizontalContentAlignment="Center">
-                        <TextBlock HorizontalAlignment="Center" Name="defaultItem1" FontSize="30">无音乐</TextBlock>
-                        <TextBlock HorizontalAlignment="Center" Name="defaultItem2" FontSize="30">无歌词</TextBlock>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Height="40">
