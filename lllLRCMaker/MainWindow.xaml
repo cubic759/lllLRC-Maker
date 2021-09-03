@@ -12,10 +12,14 @@
         Drop="Window_Drop"
         DragEnter="Window_DragEnter"
         WindowStyle="None"
+        Title="lllLRC Maker"
+        MaxHeight="613.2"
+        MaxWidth="808.2"
+        StateChanged="Window_StateChanged"
     >
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="2" GlassFrameThickness="9"
-            ResizeBorderThickness="3"/>
+            ResizeBorderThickness="0"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
         <DrawingImage x:Key="file_earmark_musicDrawingImage">
@@ -445,7 +449,7 @@
             <RowDefinition Height="38.2"/>
         </Grid.RowDefinitions>
         <DockPanel Name="dock" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="30" MouseMove="TitleBar_MouseMove" MouseUp="DockPanel_MouseUp" MouseDown="TitleBar_MouseDown" Background="#4C9CFB" DockPanel.Dock="Top">
-            <TextBlock Name="txtTitle"  Padding="5,3,2,3" Text="lllLRC Maker" 
+            <TextBlock Name="txtTitle" Padding="5,3,2,3" Text="lllLRC Maker" 
                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" FontFamily="微软雅黑"  
                    Foreground="White"/>
             <StackPanel x:Name="ClassCodeChooser" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
@@ -453,10 +457,7 @@
                                 Width="60" Height="30" Click="btn_min_Click" Grid.Column="0" Background="Transparent">
                     <Image Source="{StaticResource minimizeDrawingImage}" Width="15"></Image>
                 </Button>
-                <Button HorizontalAlignment="Right" x:Name="btn_max" Focusable="False"  BorderThickness="0"
-                                Width="60" Height="30" Click="btn_max_Click" Background="Transparent">
-                    <Image x:Name="maximizeImage" Source="{StaticResource maximizeDrawingImage}" Height="11" ></Image>
-                </Button>
+                
                 <Button HorizontalAlignment="Right" x:Name="btn_close" Focusable="False"  BorderThickness="0"
                                 Width="60" Height="30" Click="btn_close_Click" Background="Transparent">
                     <Image Source="{StaticResource closeDrawingImage}" Height="18"></Image>

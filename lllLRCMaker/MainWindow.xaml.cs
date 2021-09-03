@@ -136,63 +136,57 @@ namespace lllLRCMaker
         }
         private Color getDifferentHueColor(System.Drawing.Color ColorTo, System.Drawing.Color ColorFrom)//将原色色调转换到目标色调
         {
-            byte alpha = ColorFrom.A;
             float hue = ColorTo.GetHue();
             float saturation = ColorFrom.GetSaturation();
-            float brightness = ColorFrom.GetBrightness();
-            Color result = HSB2RGB(alpha, hue, saturation, brightness);
+            float lightness = ColorFrom.GetBrightness();
+            Color result = HSL2RGB(hue, saturation, lightness);
+            Console.WriteLine("hsb: " + hue + " " + saturation + " " + lightness);
             return result;
         }
-        public static Color HSB2RGB(byte alpha, float hue, float saturation, float brightness)
+        public static Color HSL2RGB(float hue, float saturation, float lightness)//
         {
-            int r = 0, g = 0, b = 0;
+            byte r;
+            byte g;
+            byte b;
+
             if (saturation == 0)
             {
-                r = g = b = (int)(brightness * 255.0f + 0.5f);
+                r = g = b = (byte)(lightness * 255);
             }
             else
             {
-                float h = (hue - (float)Math.Floor(hue)) * 6.0f;
-                float f = h - (float)Math.Floor(h);
-                float p = brightness * (1.0f - saturation);
-                float q = brightness * (1.0f - saturation * f);
-                float t = brightness * (1.0f - (saturation * (1.0f - f)));
-                switch ((int)h)
-                {
-                    case 0:
-                        r = (int)(brightness * 255.0f + 0.5f);
-                        g = (int)(t * 255.0f + 0.5f);
-                        b = (int)(p * 255.0f + 0.5f);
-                        break;
-                    case 1:
-                        r = (int)(q * 255.0f + 0.5f);
-                        g = (int)(brightness * 255.0f + 0.5f);
-                        b = (int)(p * 255.0f + 0.5f);
-                        break;
-                    case 2:
-                        r = (int)(p * 255.0f + 0.5f);
-                        g = (int)(brightness * 255.0f + 0.5f);
-                        b = (int)(t * 255.0f + 0.5f);
-                        break;
-                    case 3:
-                        r = (int)(p * 255.0f + 0.5f);
-                        g = (int)(q * 255.0f + 0.5f);
-                        b = (int)(brightness * 255.0f + 0.5f);
-                        break;
-                    case 4:
-                        r = (int)(t * 255.0f + 0.5f);
-                        g = (int)(p * 255.0f + 0.5f);
-                        b = (int)(brightness * 255.0f + 0.5f);
-                        break;
-                    case 5:
-                        r = (int)(brightness * 255.0f + 0.5f);
-                        g = (int)(p * 255.0f + 0.5f);
-                        b = (int)(q * 255.0f + 0.5f);
-                        break;
-                }
+                float v1, v2;
+                float h = (float)hue / 360;
+
+                v2 = (lightness < 0.5) ? (lightness * (1 + saturation)) : (lightness + saturation - (lightness * saturation));
+                v1 = 2 * lightness - v2;
+
+                r = (byte)(255 * HueToRGB(v1, v2, h + (1.0f / 3)));
+                g = (byte)(255 * HueToRGB(v1, v2, h));
+                b = (byte)(255 * HueToRGB(v1, v2, h - (1.0f / 3)));
             }
-            Console.WriteLine(alpha + " " + (byte)(r * 255) + " " + (byte)(g * 255) + " " + (byte)(b * 255));
-            return Color.FromArgb(alpha, Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
+
+            Console.WriteLine("rgb: " + r + " " + g + " " + b);
+            return Color.FromRgb(r, g, b);
+        }
+        private static float HueToRGB(float v1, float v2, float vH)
+        {
+            if (vH < 0)
+                vH += 1;
+
+            if (vH > 1)
+                vH -= 1;
+
+            if ((6 * vH) < 1)
+                return v1 + ((v2 - v1) * 6 * vH);
+
+            if ((2 * vH) < 1)
+                return v2;
+
+            if ((3 * vH) < 2)
+                return v1 + ((v2 - v1) * ((2.0f / 3) - vH) * 6);
+
+            return v1;
         }
         private System.Drawing.Color convertToDrawingColor(Color colorFrom)
         {
@@ -448,17 +442,21 @@ namespace lllLRCMaker
             System.Drawing.Image image = renderer.Render(name, samplingPeakProvider, myRendererSettings);
             string titleName = title.Replace(".mp3", "") + ".png";
             string destination = Path.Combine(root, titleName);
-            if (!File.Exists(destination))
+            if (File.Exists(destination))
             {
-                image.Save(destination);
+                File.Delete(destination);
             }
+            image.Save(destination);
             _ = Dispatcher.BeginInvoke((Action)delegate
             {
                 if (addSongsWindow.HasFile())
                 {
                     albumImg.Source = null;
                 }
-                dock.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)dock.Background).Color)).ToString());
+                Color dockColor = getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)dock.Background).Color));
+                dock.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(dockColor.ToString());
+                float dockHue = convertToDrawingColor(dockColor).GetHue();
+                txtTitle.Foreground = (dockHue <= 70 && dockHue >= 50 || dockHue <= 150 && dockHue >= 185) ? Brushes.Black : Brushes.White;
                 grid.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)grid.Background).Color)).ToString());
                 menu.Background = (Brush)new System.Windows.Media.BrushConverter().ConvertFromString(getDifferentHueColor(backgroundMajorColor, convertToDrawingColor(((SolidColorBrush)menu.Background).Color)).ToString());
                 img.Source = new BitmapImage(new Uri(destination, UriKind.RelativeOrAbsolute));
@@ -479,27 +477,13 @@ namespace lllLRCMaker
             }
         }
 
-        private int clickCounter = 0;
         private bool isClickOnTitle = false;
         /// <summary>
-        /// 标题栏双击事件
+        /// 标题栏点击事件
         /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            clickCounter += 1;
-            System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
-            timer.Tick += (s, e1) => { timer.IsEnabled = false; clickCounter = 0; };
-            timer.IsEnabled = true;
             isClickOnTitle = true;
-
-            if (clickCounter % 2 == 0)
-            {
-                timer.IsEnabled = false;
-                clickCounter = 0;
-                WindowState = WindowState == WindowState.Maximized ?
-                              WindowState.Normal : WindowState.Maximized;
-            }
         }
 
         /// <summary>
@@ -516,25 +500,6 @@ namespace lllLRCMaker
         private void btn_min_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized; //设置窗口最小化
-        }
-
-        /// <summary>
-        /// 窗口最大化与还原
-        /// </summary>
-        private void btn_max_Click(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal; //设置窗口还原
-                maximizeImage.SetResourceReference(Image.SourceProperty, "maximizeDrawingImage");
-                maximizeImage.Height = 11;
-            }
-            else
-            {
-                WindowState = WindowState.Maximized; //设置窗口最大化
-                maximizeImage.SetResourceReference(Image.SourceProperty, "maximize1DrawingImage");
-                maximizeImage.Height = 12;
-            }
         }
 
         /// <summary>
@@ -1245,6 +1210,14 @@ namespace lllLRCMaker
         private void Save_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal; //设置窗口还原
+            }
         }
     }
     public class LyricData

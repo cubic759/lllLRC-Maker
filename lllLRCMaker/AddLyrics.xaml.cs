@@ -135,11 +135,13 @@ namespace lllLRCMaker
             {
                 TranslatedText.IsEnabled = true;
                 shouldHaveTranslate = true;
+                setTranslate.ToolTip = "关闭翻译";
             }
             else
             {
                 TranslatedText.IsEnabled = false;
                 shouldHaveTranslate = false;
+                setTranslate.ToolTip = "打开翻译";
             }
         }
 
